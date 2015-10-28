@@ -1,0 +1,61 @@
+var AWS = window.AWS,
+    API;
+
+var creds = new AWS.CognitoIdentityCredentials({
+    IdentityPoolId: '{{apiDeploy.defaults.aws.IdentityPoolId}}'
+});
+
+AWS.config.update({
+    region: '{{apiDeploy.defaults.defaults.aws.region}}',
+    credentials: creds
+});
+
+creds.get(function (err, data) {
+    err && console.warn(err);
+});
+
+var lambda = new AWS.Lambda();
+
+function invoke(func, payload, done) {
+    lambda.invoke({
+        FunctionName: func,
+        Payload: JSON.stringify(payload)
+    }, function(err, data) {
+        var payload;
+
+        if (API.debug) console.log(arguments);
+
+        if (err) return done(err);
+
+        try {
+            payload = JSON.parse(data.Payload);
+        } catch (e) {}
+
+        if ('errorMessage' in payload) return done(payload.errorMessage);
+
+        done(null, payload);
+    });
+}
+
+API = {
+    debug: false,
+    creds: creds,
+
+{{#each paths}}
+    {{#each .}}
+        {{#with apiDeploy}}
+            {{#if sdk.method}}
+    {{sdk.method}}: function {{sdk.method}}(data, done) {
+    {{#if lambda.arn}}
+        invoke('{{lambda.arn}}', data, done);
+    {{else}}
+        console.warn('Lambda not deployed:', '{{sdk.method}}');
+    {{/if}}
+    },
+            {{/if}}
+        {{/with}}
+    {{/each}}
+{{/each}}
+};
+
+module.exports = API;

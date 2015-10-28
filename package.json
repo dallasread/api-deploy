@@ -1,11 +1,20 @@
 {
   "name": "api-deploy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web. Your SDK and Lambdas are both built based on the `config.json` that you supply.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dallasread/api-deploy"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "api"
+  ],
   "author": "Dallas Read",
   "license": "MIT",
   "dependencies": {
@@ -15,7 +24,7 @@
     "gulp-uglify": "^1.4.2",
     "gulp-util": "^3.0.7",
     "gulp-vinyl-zip": "^1.1.0",
-    "uglifyify": "^3.0.1",
+    "minifyify": "^7.1.0",
     "uuid": "^2.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

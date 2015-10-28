@@ -1,8 +1,10 @@
 # API Deploy
 
-API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web. Your SDK and Lambdas are both built based on the `config.json` that you supply.
+API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web & other Node apps. Your SDK and Lambdas are both built based on the `config.json` that you supply.
 
-## How to Deploy to Amazon Lambda
+## Working With Lambdas
+
+### How to Deploy to Amazon Lambda
 
 ```
 var APIDeploy = require('api-deploy').create('./path/to/config.json');
@@ -19,16 +21,7 @@ APIDeploy.deploy('MyLambda', function() {
 });
 ```
 
-## How to Generate an SDK
-
-```
-var APIDeploy = require('api-deploy').create('./path/to/config.json');
-APIDeploy.sdk(function() {
-    console.log('Done creating the SDK!');
-});
-```
-
-## A Sample Config.json
+### A Sample Config.json
 
 ```
 {
@@ -78,5 +71,31 @@ gulp.task('api-sdk', function(done) {
 // `gulp api-deploy` task that deploys your Lambdas.
 gulp.task('api-deploy', function(done) {
     APIDeploy.deploy(argv.name, done);
+});
+```
+
+## Working with SDKs
+
+### How to Generate an SDK
+
+```
+var APIDeploy = require('api-deploy').create('./path/to/config.json');
+APIDeploy.sdk(function() {
+    console.log('Done creating the SDK!');
+});
+```
+
+### How to Use the SDK
+
+```
+// These are built from the
+require('./sdk.js');
+var MyAwesomeAppAPI = MyAwesomeApp({
+    accessKeyId:
+    secretAccessKey:
+    region: ''
+});
+MyAwesomeAppAPI.usersCreate(inputData, function(err, data) {
+    console.log(err, data);
 });
 ```
