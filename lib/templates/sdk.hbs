@@ -6,7 +6,7 @@ var creds = new AWS.CognitoIdentityCredentials({
 });
 
 AWS.config.update({
-    region: '{{apiDeploy.defaults.defaults.aws.region}}',
+    region: '{{apiDeploy.defaults.aws.region}}',
     credentials: creds
 });
 
