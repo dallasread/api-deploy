@@ -9,6 +9,8 @@ var APIDeploy = Generator.generate(function APIDeploy(configPath) {
 
 APIDeploy.definePrototype(require('./lib/config'));
 APIDeploy.definePrototype(require('./lib/lambda'));
+APIDeploy.definePrototype(require('./lib/api-gateway'));
+APIDeploy.definePrototype(require('./lib/api-endpoint'));
 APIDeploy.definePrototype(require('./lib/deploy'));
 APIDeploy.definePrototype(require('./lib/sdk'));
 

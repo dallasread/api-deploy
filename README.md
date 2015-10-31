@@ -46,7 +46,8 @@ APIDeploy.deploy('MyLambda', function() {
         },
         "sdk": {
             "name": "MyAwesomeApp", // The SDK's namespace on window
-            "path": "./sdk.js" // The output file of the SDK
+            "path": "./sdk.js", // The output file of the SDK
+            "method": "apiGateway" // Or `lambda` (which requires the Amazon SDK to be present)
         }
     },
     "paths": {

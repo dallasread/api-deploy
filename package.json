@@ -21,6 +21,7 @@
     "async": "^1.4.2",
     "aws-sdk": "^2.2.10",
     "browserify": "^11.2.0",
+    "gulp": "^3.9.0",
     "gulp-uglify": "^1.4.2",
     "gulp-util": "^3.0.7",
     "gulp-vinyl-zip": "^1.1.0",

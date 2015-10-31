@@ -2,16 +2,16 @@ var AWS = window.AWS,
     API;
 
 var creds = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: '{{apiDeploy.defaults.aws.IdentityPoolId}}'
+    IdentityPoolId: '{{x-apiDeploy.aws.IdentityPoolId}}'
 });
 
 AWS.config.update({
-    region: '{{apiDeploy.defaults.aws.region}}',
+    region: '{{x-apiDeploy.aws.region}}',
     credentials: creds
 });
 
 creds.get(function (err, data) {
-    err && console.warn(err);
+    API.debug && err && console.warn(err);
 });
 
 var lambda = new AWS.Lambda();
@@ -23,7 +23,7 @@ function invoke(func, payload, done) {
     }, function(err, data) {
         var payload;
 
-        if (API.debug) console.log(arguments);
+        if (API.debug) console.log(err, data);
 
         if (err) return done(err);
 
@@ -39,7 +39,6 @@ function invoke(func, payload, done) {
 
 API = {
     debug: false,
-    creds: creds,
 
 {{#each paths}}
     {{#each .}}
@@ -49,7 +48,7 @@ API = {
     {{#if lambda.arn}}
         invoke('{{lambda.arn}}', data, done);
     {{else}}
-        console.warn('Lambda not deployed:', '{{sdk.method}}');
+        this.debug && console.warn('Lambda not deployed:', '{{sdk.method}}');
     {{/if}}
     },
             {{/if}}
