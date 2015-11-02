@@ -20,12 +20,15 @@
   "dependencies": {
     "async": "^1.4.2",
     "aws-sdk": "^2.2.10",
+    "aws4": "^1.1.0",
     "browserify": "^11.2.0",
     "gulp": "^3.9.0",
     "gulp-uglify": "^1.4.2",
     "gulp-util": "^3.0.7",
     "gulp-vinyl-zip": "^1.1.0",
     "minifyify": "^7.1.0",
+    "pluralize": "^1.2.1",
+    "request": "^2.65.0",
     "uuid": "^2.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"

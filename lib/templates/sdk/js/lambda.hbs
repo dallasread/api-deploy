@@ -45,8 +45,8 @@ API = {
         {{#with apiDeploy}}
             {{#if sdk.method}}
     {{sdk.method}}: function {{sdk.method}}(data, done) {
-    {{#if lambda.arn}}
-        invoke('{{lambda.arn}}', data, done);
+    {{#if lambda.id}}
+        invoke('{{lambda.id}}', data, done);
     {{else}}
         this.debug && console.warn('Lambda not deployed:', '{{sdk.method}}');
     {{/if}}

@@ -8,10 +8,18 @@ var APIDeploy = Generator.generate(function APIDeploy(configPath) {
 });
 
 APIDeploy.definePrototype(require('./lib/config'));
-APIDeploy.definePrototype(require('./lib/lambda'));
-APIDeploy.definePrototype(require('./lib/api-gateway'));
-APIDeploy.definePrototype(require('./lib/api-endpoint'));
-APIDeploy.definePrototype(require('./lib/deploy'));
+
 APIDeploy.definePrototype(require('./lib/sdk'));
+
+APIDeploy.definePrototype(require('./lib/deploy'));
+
+APIDeploy.definePrototype(require('./lib/lambda'));
+
+APIDeploy.definePrototype(require('./lib/rest-api'));
+APIDeploy.definePrototype(require('./lib/rest-api-resources'));
+APIDeploy.definePrototype(require('./lib/rest-api-methods'));
+APIDeploy.definePrototype(require('./lib/rest-api-integrations'));
+APIDeploy.definePrototype(require('./lib/rest-api-access-policies'));
+APIDeploy.definePrototype(require('./lib/rest-api-deployments'));
 
 module.exports = APIDeploy;

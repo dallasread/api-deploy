@@ -6,7 +6,7 @@ var API = {
         {{#with x-apiDeploy}}
             {{#if sdk.method}}
     {{sdk.method}}: function {{sdk.method}}(data, done) {
-    {{#if lambda.arn}}
+    {{#if lambda.id}}
         $.ajax({
             method: '{{@key}}',
             url: '{{@../key}}',
