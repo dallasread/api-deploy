@@ -81,7 +81,9 @@ gulp.task('api-sdk', function(done) {
 
 // `gulp api-deploy` task that deploys your Lambdas.
 gulp.task('api-deploy', function(done) {
-    APIDeploy.deploy(argv.name, done);
+    APIDeploy.deploy({
+        routes: argv.name
+    }, done);
 });
 ```
 
@@ -107,8 +109,3 @@ MyAwesomeApp.usersCreate(inputData, function(err, data) {
     console.log(err, data);
 });
 ```
-
-## TODO
-- API Gateway integration
-  - Deploy
-  - Headers
