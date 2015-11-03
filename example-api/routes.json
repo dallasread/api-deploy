@@ -1,0 +1,10 @@
+{
+    "/events": {
+        "get": "./events/index.js",
+        "post": "./events/create.js"
+    },
+    "/events/{id}": {
+        "get": "./events/create.js",
+        "patch": "./events/update.js"
+    }
+}

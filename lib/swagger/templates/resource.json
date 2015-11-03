@@ -1,0 +1,59 @@
+{
+    "paths": {
+        "{{path}}": {
+            "{{downcase method}}": {
+                "x-amazon-apigateway-auth": {
+                    "type": "NONE"
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "AWS",
+                    "uri": null,
+                    "apiKeyRequired": false,
+                    "httpMethod": "{{upcase method}}",
+                    "cacheNamespace": "cache-namespace",
+                    "cacheKeyParameters": [],
+                    "credentials": null,
+                    "requestTemplates": {
+                        "application/json": {
+                            "payload": "$input.params()",
+                            "path": "$input.params().path",
+                            "query": "$input.params().querystring",
+                            "header": "$input.params().header",
+                            "Authorization": "$input.params(\"Authorization\")"
+                        }
+                    },
+                    "requestParameters": {
+                        "method.request.header.Authorization": true
+                    },
+                    "requestModels": {
+                        "application/json": "Empty"
+                    },
+                    "responses": {
+                        "200": {
+                            "statusCode": "200",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        },
+                        "default": {
+                            "statusCode": "400",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
