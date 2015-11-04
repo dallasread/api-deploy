@@ -22,6 +22,7 @@
   "dependencies": {
     "async": "^1.4.2",
     "aws-sdk": "^2.2.10",
+    "aws4": "^1.1.0",
     "browserify": "^11.2.0",
     "deepmerge": "^0.2.10",
     "gulp": "^3.9.0",

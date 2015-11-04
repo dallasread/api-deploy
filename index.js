@@ -58,14 +58,17 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
     _.swagger.data = _.readSwagger();
 });
 
+APIDeploy.definePrototype(require('./lib/sdk/generate'));
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
-APIDeploy.definePrototype(require('./lib/lambdas/deploy'));
+APIDeploy.definePrototype(require('./lib/deploy'));
 APIDeploy.definePrototype(require('./lib/methods/get'));
 
-// APIDeploy.definePrototype(require('./lib/config'));
-// APIDeploy.definePrototype(require('./lib/api-gateway'));
-// APIDeploy.definePrototype(require('./lib/api-endpoint'));
-// APIDeploy.definePrototype(require('./lib/deploy'));
-// APIDeploy.definePrototype(require('./lib/sdk'));
+APIDeploy.definePrototype(require('./lib/lambdas/deploy'));
+
+APIDeploy.definePrototype(require('./lib/api-gateway/rest-api'));
+APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/resources'));
+APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/methods'));
+APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/integrations'));
+APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/deployments'));
 
 module.exports = APIDeploy;

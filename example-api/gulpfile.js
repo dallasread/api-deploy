@@ -2,7 +2,8 @@ var gulp = require('gulp'),
     argv = require('yargs').argv,
     deployer = require('../').create({
         sdk: {
-            path: ['./sdk.json'],
+            path: ['./sdk.js'],
+            url: 'http://api.amazing.com',
             name: 'MySampleAPI'
         },
         swagger: {
@@ -25,15 +26,21 @@ gulp.task('generate-sdk', function(done) {
 });
 
 gulp.task('deploy', function(done) {
-    deployer.deploy(argv.name, done);
+    deployer.deploy(
+        typeof argv.name === 'string' ? [argv.name] : argv.name,
+        done
+    );
 });
 
 gulp.task('deploy-lambdas', function(done) {
-    deployer.deployLambdas(argv.name ? [argv.name] : null, done);
+    deployer.deployLambdas(
+        typeof argv.name === 'string' ? [argv.name] : argv.name,
+        done
+    );
 });
 
 gulp.task('generate-swagger', function(done) {
     deployer.generateSwagger({
-        regeneratePaths: true
+        // regeneratePaths: true // This is dangerous - you'll lose your ARNs
     }, done);
 });
