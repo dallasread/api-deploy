@@ -70,11 +70,6 @@ deployer.deployAPIGateway(optionalArrayOfRoutes || null);
 ## If you only need to deploy the Lambdas:
 
 ```
-// What does it do?
-// - if routes supplied, update swagger
-// - Find routeNames (or do all of them)
-// - Deploy appropriate lambdas
-
 deployer.deployLambdas(optionalArrayOfRoutes || null);
 ```
 

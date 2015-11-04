@@ -1,6 +1,6 @@
 var gulp = require('gulp'),
     argv = require('yargs').argv,
-    APIDeploy = require('../').create({
+    deployer = require('../').create({
         sdk: {
             path: ['./sdk.json'],
             name: 'MySampleAPI'
@@ -8,27 +8,26 @@ var gulp = require('gulp'),
         swagger: {
             path: './swagger.json'
         },
-        routes: require('./routes.json'),
-        // templates: {
-        //     swagger: {
-        //         resource: '{"paths": {"{{path}}": {"{{downcase method}}": {}}}}'
-        //     }
-        // }
+        routes: require('./routes.json')
         // defaults: {
         //     lambda
         // }
     });
 
 gulp.task('generate-sdk', function(done) {
-    APIDeploy.generateSDK(done);
+    deployer.generateSDK(done);
 });
 
 gulp.task('deploy', function(done) {
-    APIDeploy.deploy(argv.name, done);
+    deployer.deploy(argv.name, done);
+});
+
+gulp.task('deploy-lambdas', function(done) {
+    deployer.deployLambdas(argv.name ? [argv.name] : null, done);
 });
 
 gulp.task('generate-swagger', function(done) {
-    APIDeploy.generateSwagger({
+    deployer.generateSwagger({
         regeneratePaths: true
     }, done);
 });

@@ -14,16 +14,24 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
         writable: true
     }, {
         logger: options.logger || Utils.logger,
-        templates: merge({
-            swagger: {
-                resource: JSON.stringify(
-                    require('./lib/swagger/templates/resource')
-                )
-            }
-        }, options.templates || {})
+        defaults: merge(
+            {
+                uglify: {},
+                lambda: {},
+                aws: {},
+                templates: {
+                    swagger: {
+                        resource: JSON.stringify(
+                            require('./lib/swagger/templates/resource')
+                        )
+                    }
+                }
+            },
+            options.defaults || {}
+        )
     });
 
-    delete options.templates;
+    delete options.defaults;
 
     _.defineProperties({
         writable: true,
@@ -32,9 +40,10 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
 });
 
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
+APIDeploy.definePrototype(require('./lib/lambdas/deploy'));
+APIDeploy.definePrototype(require('./lib/methods/get'));
 
 // APIDeploy.definePrototype(require('./lib/config'));
-// APIDeploy.definePrototype(require('./lib/lambda'));
 // APIDeploy.definePrototype(require('./lib/api-gateway'));
 // APIDeploy.definePrototype(require('./lib/api-endpoint'));
 // APIDeploy.definePrototype(require('./lib/deploy'));

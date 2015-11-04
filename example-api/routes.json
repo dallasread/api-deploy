@@ -1,10 +1,9 @@
 {
-    "/events": {
-        "get": "./events/index.js",
-        "post": "./events/create.js"
+    "/hello": {
+        "get": "./hello/world",
+        "post": "./hello/world"
     },
-    "/events/{id}": {
-        "get": "./events/create.js",
-        "patch": "./events/update.js"
+    "/hello/there": {
+        "get": "./hello/there"
     }
 }
