@@ -6,11 +6,16 @@ API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on
 
 ## To use API Deploy, create it with a simple config:
 
+First, you'll need to `npm i api-deploy`. Then:
+
 ```
+var APIDeploy = require('api-deploy');
+
 var deployer = APIDeploy.create({
     sdk: {
         path: './path/to/sdk' || ['./path/to/sdk'],
-        name: 'MyAPI'
+        name: 'MyAPI',
+        url: 'https://api.api-deploy.com'
     },
     swagger: {
         path: './path/to/swagger'
@@ -19,29 +24,31 @@ var deployer = APIDeploy.create({
         '/accounts': {
             'post': './path/to/handler'
         }
+    },
+    defaults: {
+        lambda: {
+            role: 'arn:aws:iam::xxxxxxxxxxxxxxxx'
+        },
+        aws: {
+            region: 'us-east-1',
+            profile: 'personal'
+        }
     }
 });
-```
-
-## You can update these options later:
-
-```
-deployer.routes = newRoutesObject;
-deployer.sdk = newSDKObject;
-deployer.swagger = newSwaggerObject;
 ```
 
 ## To deploy your API:
 
 ```
-// What does it do?
-// - generateSwagger
-// - deployAPIGateway
-// - deployLambdas
-// - generateSDK
-
 deployer.deploy();
 ```
+
+What does this actually do?
+
+- generateSwagger
+- deployAPIGateway
+- deployLambdas
+- generateSDK
 
 ## If you only need to deploy selected routes:
 
@@ -59,11 +66,6 @@ deployer.deploy(optionalArrayOfRoutes);
 ## If you only need to deploy to the APIGateway:
 
 ```
-// What does it do?
-// - if routes supplied, update swagger
-// - Find routeNames (or do all of them)
-// - Deploy appropriate endpoints
-
 deployer.deployAPIGateway(optionalArrayOfRoutes || null);
 ```
 
@@ -79,29 +81,34 @@ deployer.deployLambdas(optionalArrayOfRoutes || null);
 deployer.generateSwagger();
 ```
 
-## Every method plays nice with gulp:
+## Gulp integration couldn't be simpler:
 
-For gulp build synchronicity, pass a `done` in as the last argument of any method call.
+Yes, this could be your entire gulp file.
 
 ```
 var gulp = require('gulp'),
-    argv = require('yargs').argv,
     deployer = require('api-deploy').create({ /* YourConfigHere */ });
 
-gulp.task('deploy', function(done) {
-    deployer.deploy(argv.name, done);
-});
+deployer.registerTasks(gulp);
+
+// Now, you can run:
+// - `gulp api-deploy`
+// - `gulp generate-sdk`
+// - `gulp deploy-lambdas`
+// - `gulp generate-swagger`
+// - `gulp api-deploy --name /accounts`
+// - `gulp api-deploy --name operationId`
+// - `gulp deploy-lambdas --name /accounts`
 ```
 
-## And... one more thing. To generate an SDK:
+Want to see our gulp file? [https://github.com/dallasread/api-deploy/tree/example-api/gulpfile.js](Here it is.)
+
+## And... one more thing. To generate a JS SDK for Node/Browser use:
 
 ```
-// What does it do?
-// - generateSwagger
-// - readSwagger
-// - writeToSDKPath
-
 deployer.generateSDK();
 ```
 
-##
+## Want to see an example API?
+
+[https://github.com/dallasread/api-deploy/tree/example-api](https://github.com/dallasread/api-deploy/tree/example-api)

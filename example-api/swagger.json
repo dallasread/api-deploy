@@ -273,6 +273,15 @@
                     }
                 }
             }
+        },
+        "/": {
+            "x-amazon-apigateway-resource": {
+                "id": "1ap2e7a7f4"
+            }
         }
+    },
+    "THIS FILE IS GENERATED AUTOMATICALLY BY API-DEPLOY": true,
+    "x-amazon-apigateway-restapi": {
+        "id": "0prhzz4625"
     }
 }
