@@ -2,6 +2,14 @@
   "paths": {
     "/hello/there": {
       "get": {
+        "x-amazon-lambda": {
+          "handler": "./hello/there",
+          "memorySize": "128",
+          "role": "arn:aws:iam::347191724861:role/Lambda",
+          "timeout": "60",
+          "runtime": "nodejs",
+          "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-GET"
+        },
         "x-amazon-apigateway-auth": {
           "type": "NONE"
         },
@@ -52,11 +60,20 @@
               }
             }
           }
-        }
+        },
+        "operationId": "MySampleAPI-Hello-There-GET"
       }
     },
     "/hello": {
       "post": {
+        "x-amazon-lambda": {
+          "handler": "./hello/world",
+          "memorySize": "128",
+          "role": "arn:aws:iam::347191724861:role/Lambda",
+          "timeout": "60",
+          "runtime": "nodejs",
+          "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-POST"
+        },
         "x-amazon-apigateway-auth": {
           "type": "NONE"
         },
@@ -107,9 +124,18 @@
               }
             }
           }
-        }
+        },
+        "operationId": "MySampleAPI-Hello-World-POST"
       },
       "get": {
+        "x-amazon-lambda": {
+          "handler": "./hello/world",
+          "memorySize": "128",
+          "role": "arn:aws:iam::347191724861:role/Lambda",
+          "timeout": "60",
+          "runtime": "nodejs",
+          "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-GET"
+        },
         "x-amazon-apigateway-auth": {
           "type": "NONE"
         },
@@ -160,7 +186,8 @@
               }
             }
           }
-        }
+        },
+        "operationId": "MySampleAPI-Hello-World-GET"
       }
     }
   }

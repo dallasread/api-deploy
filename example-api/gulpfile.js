@@ -8,10 +8,16 @@ var gulp = require('gulp'),
         swagger: {
             path: './swagger.json'
         },
-        routes: require('./routes.json')
-        // defaults: {
-        //     lambda
-        // }
+        routes: require('./routes.json'),
+        defaults: {
+            lambda: {
+                role: 'arn:aws:iam::347191724861:role/Lambda'
+            },
+            aws: {
+                region: 'us-east-1',
+                profile: 'personal'
+            }
+        }
     });
 
 gulp.task('generate-sdk', function(done) {

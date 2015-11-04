@@ -1,3 +1,3 @@
-module.exports = function(event, context) {
-    context.done('Hello World!');
+module.exports.handler = function(event, context) {
+    context.succeed('Hello World!');
 };

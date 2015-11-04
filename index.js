@@ -1,4 +1,5 @@
 var Generator = require('generate-js'),
+    AWS = require('aws-sdk'),
     Utils = require('./lib/utils'),
     handlebars = Utils.handlebars,
     merge = require('deepmerge');
@@ -7,18 +8,21 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
     var _ = this;
 
     _.defineProperties({
-        handlebars: handlebars
-    });
-
-    _.defineProperties({
         writable: true
     }, {
         logger: options.logger || Utils.logger,
         defaults: merge(
             {
                 uglify: {},
-                lambda: {},
-                aws: {},
+                lambda: {
+                    memorySize: 128,
+                    role: null,
+                    timeout: 60,
+                    runtime: 'nodejs',
+                },
+                aws: {
+                    region: 'us-east-1'
+                },
                 templates: {
                     swagger: {
                         resource: JSON.stringify(
@@ -31,12 +35,27 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
         )
     });
 
+    if (_.defaults.aws.profile) {
+        AWS.config.credentials = new AWS.SharedIniFileCredentials({
+            profile: _.defaults.aws.profile
+        });
+    }
+
+    AWS.config.update(_.defaults.aws);
+
+    _.defineProperties({
+        handlebars: handlebars,
+        AWSLambda: new AWS.Lambda()
+    });
+
     delete options.defaults;
 
     _.defineProperties({
         writable: true,
         enumerable: true
     }, options);
+
+    _.swagger.data = _.readSwagger();
 });
 
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
