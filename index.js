@@ -22,13 +22,6 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
                 },
                 aws: {
                     region: 'us-east-1'
-                },
-                templates: {
-                    swagger: {
-                        resource: JSON.stringify(
-                            require('./lib/swagger/templates/resource')
-                        )
-                    }
                 }
             },
             options.defaults || {}
@@ -56,6 +49,16 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
     }, options);
 
     _.swagger.data = _.readSwagger();
+
+    _.swagger.templates = merge({
+        resource: JSON.stringify(
+            require('./lib/swagger/templates/resource.json')
+        )
+    }, _.swagger.templates || {});
+
+    _.sdk.templates = merge({
+        js: require('./lib/sdk/templates/js/rest-api.hbs')
+    }, _.sdk.templates || {});
 });
 
 APIDeploy.definePrototype(require('./lib/sdk/generate'));

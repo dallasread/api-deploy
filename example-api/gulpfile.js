@@ -3,7 +3,10 @@ var gulp = require('gulp'),
         sdk: {
             path: ['./sdk.js'],
             url: 'http://api.api-deploy.com',
-            name: 'MySampleAPI'
+            name: 'MySampleAPI',
+            // templates: {
+            //     js: require('fs').readFileSync('../lib/sdk/templates/js/lambda.hbs', { encoding: 'utf8' })
+            // }
         },
         swagger: {
             path: './swagger.json'
