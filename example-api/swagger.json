@@ -1,5 +1,74 @@
 {
     "paths": {
+        "/hello/world": {
+            "patch": {
+                "operationId": "MySampleAPI-Hello-World-PATCH",
+                "x-api-deploy": {
+                    "sdk": {
+                        "method": "helloWorld"
+                    }
+                },
+                "x-amazon-lambda": {
+                    "handler": "./hello/world",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-PATCH"
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "NONE"
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "AWS",
+                    "uri": null,
+                    "apiKeyRequired": false,
+                    "httpMethod": "PATCH",
+                    "cacheNamespace": null,
+                    "cacheKeyParameters": [],
+                    "credentials": null,
+                    "requestTemplates": {
+                        "application/json": {
+                            "payload": "$input.params()",
+                            "path": "$input.params().path",
+                            "query": "$input.params().querystring",
+                            "header": "$input.params().header",
+                            "Authorization": "$input.params(\"Authorization\")"
+                        }
+                    },
+                    "requestParameters": {
+                        "method.request.header.Authorization": true
+                    },
+                    "requestModels": {
+                        "application/json": "Empty"
+                    },
+                    "responses": {
+                        "200": {
+                            "statusCode": "200",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        },
+                        "default": {
+                            "statusCode": "400",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/hello/there": {
             "get": {
                 "operationId": "MySampleAPI-Hello-There-GET",
@@ -66,8 +135,7 @@
                             }
                         }
                     }
-                },
-                "operatdionId": "MySampleAPI-Hello-There-GET"
+                }
             }
         },
         "/hello": {

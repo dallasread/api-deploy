@@ -2,6 +2,12 @@
     "paths": {
         "{{path}}": {
             "{{downcase method}}": {
+                "operationId": "{{operationId}}",
+                "x-api-deploy": {
+                    "sdk": {
+                        "method": "{{sdkMethod}}"
+                    }
+                },
                 "x-amazon-lambda": {
                     "handler": "{{handler}}",
                     "memorySize": "{{defaults.lambda.memorySize}}",

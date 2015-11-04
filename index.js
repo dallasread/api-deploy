@@ -62,6 +62,7 @@ APIDeploy.definePrototype(require('./lib/sdk/generate'));
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
 APIDeploy.definePrototype(require('./lib/deploy'));
 APIDeploy.definePrototype(require('./lib/methods/get'));
+APIDeploy.definePrototype(require('./lib/tasks/register'));
 
 APIDeploy.definePrototype(require('./lib/lambdas/deploy'));
 

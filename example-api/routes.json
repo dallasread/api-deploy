@@ -5,5 +5,8 @@
     },
     "/hello/there": {
         "get": "./hello/there"
+    },
+    "/hello/world": {
+        "patch": "./hello/world"
     }
 }
