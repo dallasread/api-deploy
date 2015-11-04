@@ -2,7 +2,8 @@ var Generator = require('generate-js'),
     AWS = require('aws-sdk'),
     Utils = require('./lib/utils'),
     handlebars = Utils.handlebars,
-    merge = require('deepmerge');
+    merge = require('deepmerge'),
+    fs = require('fs');
 
 var APIDeploy = Generator.generate(function APIDeploy(options) {
     var _ = this;
@@ -57,7 +58,7 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
     }, _.swagger.templates || {});
 
     _.sdk.templates = merge({
-        js: require('./lib/sdk/templates/js/rest-api.hbs')
+        js: fs.readFileSync(__dirname + '/lib/sdk/templates/js/rest-api.hbs', { encoding: 'utf8' })
     }, _.sdk.templates || {});
 });
 
@@ -70,9 +71,9 @@ APIDeploy.definePrototype(require('./lib/tasks/register'));
 APIDeploy.definePrototype(require('./lib/lambdas/deploy'));
 
 APIDeploy.definePrototype(require('./lib/api-gateway/rest-api'));
-APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/resources'));
-APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/methods'));
-APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/integrations'));
-APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/deployments'));
+// APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/resources'));
+// APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/methods'));
+// APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/integrations'));
+// APIDeploy.definePrototype(require('./lib/api-gateway/rest-api/deployments'));
 
 module.exports = APIDeploy;
