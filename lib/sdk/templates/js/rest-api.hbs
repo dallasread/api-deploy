@@ -1,0 +1,25 @@
+var API = {
+    debug: false,
+
+{{#each methods}}
+    {{#if data.x-api-deploy}}
+        {{#if data.x-api-deploy.sdk.method}}
+    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
+    {{#if data.x-amazon-lambda.arn}}
+        $.ajax({
+            method: '{{_method}}',
+            url: '{{../sdk.url}}{{_path}}',
+            data: data,
+            complete: done
+        });
+    {{else}}
+        this.debug && console.warn('Api Gateway Endpoint not deployed:', '{{data.x-api-deploy.sdk.method}}');
+    {{/if}}
+    },
+        {{/if}}
+    {{/if}}
+{{/each}}
+};
+
+if (window) window.{{sdk.name}} = API;
+module.exports = API;
