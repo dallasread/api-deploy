@@ -37,6 +37,10 @@ var APIDeploy = Generator.generate(function APIDeploy(options) {
 
     AWS.config.update(_.defaults.aws);
 
+    _.defaults.aws.secretAccessKey = AWS.config.credentials.secretAccessKey;
+    _.defaults.aws.accessKeyId = AWS.config.credentials.accessKeyId;
+    _.defaults.aws.region = AWS.config.region;
+
     _.defineProperties({
         handlebars: handlebars,
         AWSLambda: new AWS.Lambda()
@@ -76,5 +80,7 @@ APIDeploy.definePrototype(require('./lib/api-gateway/methods'));
 APIDeploy.definePrototype(require('./lib/api-gateway/access-policies'));
 APIDeploy.definePrototype(require('./lib/api-gateway/integrations'));
 APIDeploy.definePrototype(require('./lib/api-gateway/deployments'));
+
+APIDeploy.definePrototype(require('./lib/utils/aws-request'));
 
 module.exports = APIDeploy;

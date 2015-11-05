@@ -9,8 +9,20 @@ var API = {
         $.ajax({
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
-            data: data,
-            complete: done
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify(data),
+            complete: function(data) {
+                if (data.responseJSON) {
+                    if (data.responseJSON.errorMessage) {
+                        done(data.responseJSON, null);
+                    } else {
+                        done(null, data.responseJSON);
+                    }
+                } else {
+                    done(new Error('Could not complete network request.'));
+                }
+            }
         });
     {{else}}
         this.debug && console.warn('Api Gateway Endpoint not deployed:', '{{data.x-api-deploy.sdk.method}}');
