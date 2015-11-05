@@ -22,7 +22,7 @@
                     "type": "AWS",
                     "uri": null,
                     "apiKeyRequired": false,
-                    "httpMethod": "{{upcase method}}",
+                    "httpMethod": "POST",
                     "cacheNamespace": null,
                     "cacheKeyParameters": [],
                     "credentials": null,

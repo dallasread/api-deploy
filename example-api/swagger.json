@@ -23,7 +23,7 @@
                     "type": "AWS",
                     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE/invocations",
                     "apiKeyRequired": false,
-                    "httpMethod": "DELETE",
+                    "httpMethod": "POST",
                     "cacheNamespace": null,
                     "cacheKeyParameters": [],
                     "credentials": null,
@@ -96,7 +96,7 @@
                     "type": "AWS",
                     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-PATCH/invocations",
                     "apiKeyRequired": false,
-                    "httpMethod": "PATCH",
+                    "httpMethod": "POST",
                     "cacheNamespace": null,
                     "cacheKeyParameters": [],
                     "credentials": null,
@@ -148,7 +148,7 @@
                 }
             },
             "x-amazon-apigateway-resource": {
-                "id": "ulecyg"
+                "id": "rfqgjy"
             }
         },
         "/hello/world": {
@@ -226,7 +226,7 @@
                 }
             },
             "x-amazon-apigateway-resource": {
-                "id": "p4kk4y"
+                "id": "y07ph8"
             }
         },
         "/hello": {
@@ -252,7 +252,7 @@
                     "type": "AWS",
                     "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET/invocations",
                     "apiKeyRequired": false,
-                    "httpMethod": "GET",
+                    "httpMethod": "POST",
                     "cacheNamespace": null,
                     "cacheKeyParameters": [],
                     "credentials": null,
@@ -304,16 +304,16 @@
                 }
             },
             "x-amazon-apigateway-resource": {
-                "id": "k2dnub"
+                "id": "giej6t"
             }
         },
         "/": {
             "x-amazon-apigateway-resource": {
-                "id": "j35fccs91f"
+                "id": "ek4ky8era8"
             }
         }
     },
     "x-amazon-apigateway-restapi": {
-        "id": "01lx7tq2a4"
+        "id": "9ztfao3nre"
     }
 }
