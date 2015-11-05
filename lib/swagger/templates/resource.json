@@ -1,38 +1,12 @@
 {
     "paths": {
         "{{path}}": {
-            "{{downcase method}}": {
-                "operationId": "{{operationId}}",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "{{sdkMethod}}"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "{{handler}}",
-                    "memorySize": "{{defaults.lambda.memorySize}}",
-                    "role": "{{defaults.lambda.role}}",
-                    "timeout": "{{defaults.lambda.timeout}}",
-                    "runtime": "{{defaults.lambda.runtime}}"
-                },
-                "x-amazon-apigateway-auth": {
-                    "type": "NONE"
-                },
+            "options": {
                 "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "uri": null,
-                    "apiKeyRequired": false,
-                    "httpMethod": "POST",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
+                    "type": "MOCK",
                     "requestTemplates": {
                         "application/json": {
-                            "payload": "$input.params()",
-                            "path": "$input.params().path",
-                            "query": "$input.params().querystring",
-                            "header": "$input.params().header",
-                            "Authorization": "$input.params(\"Authorization\")"
+                            "statusCode": 200
                         }
                     },
                     "requestParameters": {
@@ -55,16 +29,54 @@
                             "responseModels": {
                                 "application/json": "Empty"
                             }
-                        },
-                        "default": {
-                            "statusCode": "400",
+                        }
+                    }
+                }
+            },
+            "{{downcase method}}": {
+                "operationId": "{{operationId}}",
+                "x-api-deploy": {
+                    "sdk": {
+                        "method": "{{sdkMethod}}"
+                    }
+                },
+                "x-amazon-lambda": {
+                    "handler": "{{handler}}",
+                    "memorySize": "{{defaults.lambda.memorySize}}",
+                    "role": "{{defaults.lambda.role}}",
+                    "timeout": "{{defaults.lambda.timeout}}",
+                    "runtime": "{{defaults.lambda.runtime}}"
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "AWS",
+                    "apiKeyRequired": false,
+                    "httpMethod": "POST",
+                    "cacheNamespace": null,
+                    "cacheKeyParameters": [],
+                    "credentials": null,
+                    "requestTemplates": {},
+                    "requestParameters": {
+                        "method.request.header.Authorization": true
+                    },
+                    "requestModels": {
+                        "application/json": "Empty"
+                    },
+                    "responses": {
+                        "200": {
+                            "statusCode": "200",
                             "responseParameters": {
                                 "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
                             },
                             "responseTemplates": {
-                                "application/json": null
+                                "application/json": {
+                                    "payload": "$input.params()",
+                                    "path": "$input.params().path",
+                                    "query": "$input.params().querystring",
+                                    "header": "$input.params().header",
+                                    "Authorization": "$input.params(\"Authorization\")"
+                                }
                             },
                             "responseModels": {
                                 "application/json": "Empty"
