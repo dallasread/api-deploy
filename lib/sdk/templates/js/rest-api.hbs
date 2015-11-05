@@ -2,10 +2,10 @@ var API = {
     debug: false,
 
 {{#each methods}}
-    {{#if x-api-deploy}}
-        {{#if x-api-deploy.sdk.method}}
-    {{x-api-deploy.sdk.method}}: function {{x-api-deploy.sdk.method}}(data, done) {
-    {{#if x-amazon-lambda.arn}}
+    {{#if data.x-api-deploy}}
+        {{#if data.x-api-deploy.sdk.method}}
+    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
+    {{#if data.x-amazon-lambda.arn}}
         $.ajax({
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
@@ -13,7 +13,7 @@ var API = {
             complete: done
         });
     {{else}}
-        this.debug && console.warn('Api Gateway Endpoint not deployed:', '{{x-api-deploy.sdk.method}}');
+        this.debug && console.warn('Api Gateway Endpoint not deployed:', '{{data.x-api-deploy.sdk.method}}');
     {{/if}}
     },
         {{/if}}

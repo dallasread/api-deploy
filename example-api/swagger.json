@@ -1,27 +1,100 @@
 {
     "paths": {
-        "/hello/world": {
-            "patch": {
-                "operationId": "MySampleAPI-Hello-World-PATCH",
+        "/hello/there": {
+            "delete": {
+                "operationId": "MySampleAPI-Hello-There-DELETE",
                 "x-api-deploy": {
                     "sdk": {
-                        "method": "helloWorld"
+                        "method": "helloThere"
                     }
                 },
                 "x-amazon-lambda": {
-                    "handler": "./hello/world",
+                    "handler": "./hello/there",
                     "memorySize": "128",
                     "role": "arn:aws:iam::347191724861:role/Lambda",
                     "timeout": "60",
                     "runtime": "nodejs",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-PATCH"
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE"
                 },
                 "x-amazon-apigateway-auth": {
                     "type": "NONE"
                 },
                 "x-amazon-apigateway-integration": {
                     "type": "AWS",
-                    "uri": null,
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE/invocations",
+                    "apiKeyRequired": false,
+                    "httpMethod": "DELETE",
+                    "cacheNamespace": null,
+                    "cacheKeyParameters": [],
+                    "credentials": null,
+                    "requestTemplates": {
+                        "application/json": {
+                            "payload": "$input.params()",
+                            "path": "$input.params().path",
+                            "query": "$input.params().querystring",
+                            "header": "$input.params().header",
+                            "Authorization": "$input.params(\"Authorization\")"
+                        }
+                    },
+                    "requestParameters": {
+                        "method.request.header.Authorization": true
+                    },
+                    "requestModels": {
+                        "application/json": "Empty"
+                    },
+                    "responses": {
+                        "200": {
+                            "statusCode": "200",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        },
+                        "default": {
+                            "statusCode": "400",
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
+                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "MySampleAPI-Hello-There-PATCH",
+                "x-api-deploy": {
+                    "sdk": {
+                        "method": "helloThere"
+                    }
+                },
+                "x-amazon-lambda": {
+                    "handler": "./hello/there",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-PATCH"
+                },
+                "x-amazon-apigateway-auth": {
+                    "type": "NONE"
+                },
+                "x-amazon-apigateway-integration": {
+                    "type": "AWS",
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-PATCH/invocations",
                     "apiKeyRequired": false,
                     "httpMethod": "PATCH",
                     "cacheNamespace": null,
@@ -46,9 +119,12 @@
                         "200": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -57,9 +133,12 @@
                         "default": {
                             "statusCode": "400",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -67,83 +146,17 @@
                         }
                     }
                 }
+            },
+            "x-amazon-apigateway-resource": {
+                "id": "ulecyg"
             }
         },
-        "/hello/there": {
-            "get": {
-                "operationId": "MySampleAPI-Hello-There-GET",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "helloThere"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "./hello/there",
-                    "memorySize": "128",
-                    "role": "arn:aws:iam::347191724861:role/Lambda",
-                    "timeout": "60",
-                    "runtime": "nodejs",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-GET"
-                },
-                "x-amazon-apigateway-auth": {
-                    "type": "NONE"
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "uri": null,
-                    "apiKeyRequired": false,
-                    "httpMethod": "GET",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
-                    "requestTemplates": {
-                        "application/json": {
-                            "payload": "$input.params()",
-                            "path": "$input.params().path",
-                            "query": "$input.params().querystring",
-                            "header": "$input.params().header",
-                            "Authorization": "$input.params(\"Authorization\")"
-                        }
-                    },
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        },
-                        "default": {
-                            "statusCode": "400",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/hello": {
+        "/hello/world": {
             "post": {
                 "operationId": "MySampleAPI-Hello-World-POST",
                 "x-api-deploy": {
                     "sdk": {
-                        "method": "hello"
+                        "method": "helloWorld"
                     }
                 },
                 "x-amazon-lambda": {
@@ -159,7 +172,7 @@
                 },
                 "x-amazon-apigateway-integration": {
                     "type": "AWS",
-                    "uri": null,
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-POST/invocations",
                     "apiKeyRequired": false,
                     "httpMethod": "POST",
                     "cacheNamespace": null,
@@ -184,9 +197,12 @@
                         "200": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -195,9 +211,12 @@
                         "default": {
                             "statusCode": "400",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -206,8 +225,13 @@
                     }
                 }
             },
+            "x-amazon-apigateway-resource": {
+                "id": "p4kk4y"
+            }
+        },
+        "/hello": {
             "get": {
-                "operationId": "MySampleAPI-Hello-World-GET",
+                "operationId": "MySampleAPI-Hello-GET",
                 "x-api-deploy": {
                     "sdk": {
                         "method": "hello"
@@ -219,14 +243,14 @@
                     "role": "arn:aws:iam::347191724861:role/Lambda",
                     "timeout": "60",
                     "runtime": "nodejs",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-GET"
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET"
                 },
                 "x-amazon-apigateway-auth": {
                     "type": "NONE"
                 },
                 "x-amazon-apigateway-integration": {
                     "type": "AWS",
-                    "uri": null,
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET/invocations",
                     "apiKeyRequired": false,
                     "httpMethod": "GET",
                     "cacheNamespace": null,
@@ -251,9 +275,12 @@
                         "200": {
                             "statusCode": "200",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -262,9 +289,12 @@
                         "default": {
                             "statusCode": "400",
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
                                 "method.response.header.Access-Control-Allow-Methods": "'*'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseTemplates": {
+                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
@@ -272,16 +302,18 @@
                         }
                     }
                 }
+            },
+            "x-amazon-apigateway-resource": {
+                "id": "k2dnub"
             }
         },
         "/": {
             "x-amazon-apigateway-resource": {
-                "id": "1ap2e7a7f4"
+                "id": "j35fccs91f"
             }
         }
     },
-    "THIS FILE IS GENERATED AUTOMATICALLY BY API-DEPLOY": true,
     "x-amazon-apigateway-restapi": {
-        "id": "0prhzz4625"
+        "id": "01lx7tq2a4"
     }
 }

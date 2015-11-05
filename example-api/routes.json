@@ -1,12 +1,12 @@
 {
     "/hello": {
-        "get": "./hello/world",
+        "get": "./hello/world"
+    },
+    "/hello/world": {
         "post": "./hello/world"
     },
     "/hello/there": {
-        "get": "./hello/there"
-    },
-    "/hello/world": {
-        "patch": "./hello/world"
+        "patch": "./hello/there",
+        "delete": "./hello/there"
     }
 }

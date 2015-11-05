@@ -41,11 +41,11 @@ API = {
     debug: false,
 
 {{#each methods}}
-    {{#if x-api-deploy}}
-        {{#if x-api-deploy.sdk.method}}
-    {{x-api-deploy.sdk.method}}: function {{x-api-deploy.sdk.method}}(data, done) {
-    {{#if x-amazon-lambda.arn}}
-        invoke('{{lambda.id}}', data, done);
+    {{#if data.x-api-deploy}}
+        {{#if data.x-api-deploy.sdk.method}}
+    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
+    {{#if data.x-amazon-lambda.arn}}
+        invoke('{{data.x-amazon-lambda.arn}}', data, done);
     {{else}}
         this.debug && console.warn('Lambda not deployed:', '{{sdk.method}}');
     {{/if}}
