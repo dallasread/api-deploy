@@ -9,9 +9,7 @@ var API = {
         $.ajax({
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify(data),
+            data: '{{_method}}' === 'GET' ? data : JSON.stringify(data),
             complete: function(data) {
                 if (data.responseJSON) {
                     if (data.responseJSON.errorMessage) {

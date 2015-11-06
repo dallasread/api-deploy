@@ -18,7 +18,7 @@ var gulp = require('gulp'),
             },
             aws: {
                 region: 'us-east-1',
-                profile: 'personal'
+                profile: 'default'
             }
         }
     });
