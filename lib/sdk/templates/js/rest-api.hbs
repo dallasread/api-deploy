@@ -4,21 +4,35 @@ var API = {
 {{#each methods}}
     {{#if data.x-api-deploy}}
         {{#if data.x-api-deploy.sdk.method}}
-    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
+    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, headers, done) {
     {{#if data.x-amazon-lambda.arn}}
+        if (!done && typeof headers === 'function') {
+            done = headers;
+            headers = null;
+        }
+
+        if (!done && this.debug) {
+            console.warn('No callback supplied.');
+        }
+
         $.ajax({
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
             data: '{{_method}}' === 'GET' ? data : JSON.stringify(data),
+            beforeSend: function (xhr) {
+                for (var key in headers) {
+                    xhr.setRequestHeader(key, headers[key]);
+                }
+            },
             complete: function(data) {
                 if (data.responseJSON) {
                     if (data.responseJSON.errorMessage) {
-                        done(data.responseJSON, null);
+                        typeof done === 'function' && done(data.responseJSON, null);
                     } else {
-                        done(null, data.responseJSON);
+                        typeof done === 'function' && done(null, data.responseJSON);
                     }
                 } else {
-                    done(new Error('Could not complete network request.'));
+                    typeof done === 'function' && done(new Error('Could not complete network request.'));
                 }
             }
         });

@@ -2,7 +2,7 @@ var gulp = require('gulp'),
     deployer = require('../').create({
         sdk: {
             path: ['./sdk.js'],
-            url: 'http://api.api-deploy.com',
+            url: 'https://j1tajm34xc.execute-api.us-east-1.amazonaws.com/dev',
             name: 'MySampleAPI',
             // templates: {
             //     js: require('fs').readFileSync('../lib/sdk/templates/js/lambda.hbs', { encoding: 'utf8' })
