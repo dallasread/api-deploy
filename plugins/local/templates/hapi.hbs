@@ -1,0 +1,77 @@
+var AWS = require('aws-sdk');
+
+AWS.config.update({
+    region: '{{aws.region}}'
+});
+
+AWS.config.credentials = new AWS.SharedIniFileCredentials({
+    profile: '{{aws.profile}}'
+});
+
+var Hapi = require('hapi'),
+    server = new Hapi.Server(),
+    lm = require('live-modules').createLiveModules(require);
+
+server.connection({
+    host: '{{local.host}}',
+    port: {{local.port}},
+    routes: { cors: true }
+});
+
+{{#each methods}}
+    {{#if data.x-api-deploy}}
+        {{#if data.x-api-deploy.sdk.method}}
+(function () {
+    var endpoint;
+
+    lm.require('{{data.x-amazon-lambda.handler}}', '{{data.x-api-deploy.sdk.method}}', function (err, vrr, mod, status) {
+        console.log('LiveModule', status, vrr);
+
+        if (err) {
+            console.log(err);
+        } else {
+            endpoint = global.{{data.x-api-deploy.sdk.method}};
+        }
+    });
+
+    server.route({
+        method: '{{_method}}',
+        path: '{{_path}}',
+        handler: function (request, reply) {
+            var context = {
+                    done: function(err, data) {
+                        if (err) data = { error: err.message };
+                        reply(null, data);
+                    },
+                    succeed: function(data) {
+                        reply(null, data);
+                    },
+                    fail: function(err) {
+                        reply(null, { error: err.message });
+                    }
+                },
+                event = '{{_method}}' === 'GET' ? request.query : request.payload;
+
+            for (var key in request.headers) {
+                event[key] = request.headers[key];
+            }
+
+            for (var key in request.params) {
+                event[key] = request.params[key];
+            }
+
+            endpoint.handler(event, context);
+        }
+    });
+}());
+        {{/if}}
+    {{/if}}
+{{/each}}
+
+server.start(function (err) {
+    if (err) {
+        throw err;
+    }
+
+    console.log('Server running at:', server.info.uri);
+});

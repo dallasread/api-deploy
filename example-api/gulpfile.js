@@ -5,7 +5,7 @@ var gulp = require('gulp'),
             url: 'https://j1tajm34xc.execute-api.us-east-1.amazonaws.com/dev',
             name: 'MySampleAPI',
             // templates: {
-            //     js: require('fs').readFileSync('../lib/sdk/templates/js/lambda.hbs', { encoding: 'utf8' })
+            //     js: require('fs').readFileSync('../lib/sdk/templates/lambda.hbs', { encoding: 'utf8' })
             // }
         },
         swagger: {

@@ -18,9 +18,28 @@ module.exports = {
         return children;
     },
 
+    findResource: function findResource(path) {
+        var _ = this,
+            resource;
+
+        for (var i = 0; i < _.resources.length; i++) {
+            resource = _.resources[i];
+
+            if (
+                resource._path === path ||
+                resource._path === path + '/'
+            ) {
+                return resource;
+            }
+        }
+    },
+
     findMethods: function findMethods(ids) {
         var _ = this,
             path, resource, method, m, i, r;
+
+        if (typeof ids === 'string') ids = [ids];
+        ids = ids || [];
 
         _.resources = [];
         _.methods = [];
@@ -52,9 +71,7 @@ module.exports = {
             }
         }
 
-        if (typeof ids === 'string') ids = [ids];
-
-        if (ids) {
+        if (ids.length) {
             var newMethods = [],
                 newResources = [],
                 n;
@@ -62,9 +79,10 @@ module.exports = {
             for (i = 0; i < _.methods.length; i++) {
                 method = _.methods[i];
 
+
                 if (
                     (
-                        ids.indexOf(method._path) !== -1
+                        _.doesMethodExistInPath(method._path, ids)
                     ) ||
                     (
                         ids.indexOf(method.data.operationId) !== -1
@@ -92,10 +110,6 @@ module.exports = {
                     for (n = children.length - 1; n >= 0; n--) {
                         childMethod = children[n];
                         newMethods.push(childMethod);
-
-                        // if (childMethod._resource && newResources.indexOf(childMethod._resource) === -1) {
-                        //     newResources.push(childMethod._resource);
-                        // }
                     }
                 }
             }
@@ -105,5 +119,21 @@ module.exports = {
         }
 
         return _.methods;
+    },
+
+    doesMethodExistInPath: function doesMethodExistInPath(path, paths) {
+        for (var i = 0; i < paths.length; i++) {
+            if (
+                path.indexOf(paths[i]) === 0 &&
+                (
+                    !path[paths[i].length] ||
+                     path[paths[i].length] === '/'
+                )
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 };

@@ -1,8 +1,12 @@
 {
   "name": "api-deploy",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web. Your SDK and Lambdas are both built based on the `config.json` that you supply.",
-  "main": "index.js",
+  "main": "./index.js",
+  "bin": {
+    "api-deploy": "./bin/api.js",
+    "generate-sdk": "./bin/sdk.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,10 +30,13 @@
     "browserify": "^11.2.0",
     "deepmerge": "^0.2.10",
     "gulp": "^3.9.0",
+    "gulp-if": "^2.0.0",
     "gulp-uglify": "^1.4.2",
     "gulp-util": "^3.0.7",
     "gulp-vinyl-zip": "^1.1.0",
     "handlebars": "^4.0.4",
+    "hapi": "^11.1.1",
+    "live-modules": "^0.1.2",
     "minifyify": "^7.1.0",
     "pluralize": "^1.2.1",
     "uuid": "^2.0.1",

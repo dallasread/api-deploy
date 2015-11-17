@@ -19,6 +19,7 @@ var API = {
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
             data: '{{_method}}' === 'GET' ? data : JSON.stringify(data),
+            contentType: 'application/json; charset=utf-8',
             beforeSend: function (xhr) {
                 for (var key in headers) {
                     xhr.setRequestHeader(key, headers[key]);

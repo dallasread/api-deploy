@@ -2,121 +2,58 @@
 
 API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web & other Node apps. Your SDK and Lambdas are both built based on the `api.json` that you supply.
 
-**API Deploy uses a very simple configuration file and builds a Swagger 2.0 spec. It then uses that document to deploy your API.**
+**API Deploy uses a very simple configuration file to build a Swagger 2.0 spec. It then uses that document to deploy your API.**
 
 ## To use API Deploy, create it with a simple config:
 
-First, you'll need to `npm i api-deploy`. Then:
+First, you'll need to `npm install api-deploy -g`. Then create a `deployfile.js` in your project:
 
 ```
-var APIDeploy = require('api-deploy');
-
-var deployer = APIDeploy.create({
+var deployer = require('api-deploy').configure({
     sdk: {
-        path: './path/to/sdk' || ['./path/to/sdk', './path/to/sdk/copy'],
         name: 'MyAPI',
-        url: 'https://api.api-deploy.com'
+        path: './sdk.js',
+        url: 'http://myapi.com'
     },
     swagger: {
-        path: './path/to/swagger/document'
+        path: './swagger.json'
     },
     routes: {
-        '/accounts/create': {
-            'post': './path/to/handler'
-        }
-    },
-    defaults: {
-        lambda: {
-            role: 'arn:aws:iam::xxxxxxxxxxxxxxxx'
-        },
-        aws: {
-            region: 'us-east-1',
-            profile: 'personal'
+        '/accounts': {
+            'post': './accounts/create.js'
         }
     }
 });
-```
 
-## To deploy your API:
+var deployDefaults = {
+    lambda: {
+        role: 'arn:aws:iam::xxxxxxxxxx:role/root'
+    },
+    aws: {
+        profile: config.aws.profile,
+        region: 'us-east-1',
+        IdentityPoolId: 'xxxxx'
+    }
+};
 
-```
-deployer.deploy();
-```
-
-What does this actually do?
-
-- generateSwagger
-- deployAPIGateway
-- deployLambdas
-- generateSDK
-
-## If you only need to deploy selected routes:
-
-If any of the following match, we'll deploy them, along with their children.
+deployer.plugins.lambda.configure(deployDefaults);
+deployer.plugins.local.configure(deployDefaults);
 
 ```
-var optionalArrayOfRoutes = [
-    'accounts', // Deploys accounts and its children
-    'accounts/auth', // Deploys just the auth route
-    'arn:xxxxxx', // Deploys just this ARN
-    'My-Swagger-operationId' // Deploys just this operationId
-];
 
-deployer.deploy(optionalArrayOfRoutes, optionalCallback);
-```
+## Now, you can run commands like:
 
-## If you only need to deploy to the APIGateway:
-
-```
-deployer.deployAPIGateway(optionalArrayOfRoutes || null, optionalCallback);
-```
-
-## If you only need to deploy the Lambdas:
-
-```
-deployer.deployLambdas(optionalArrayOfRoutes || null, optionalCallback);
-```
-
-## If you just want to generate new Swagger 2.0 docs:
-
-```
-deployer.generateSwagger({
-    regeneratePaths: false // Dangerous! Replaces the entire `paths` object
-}, optionalCallback);
-```
-
-## Gulp integration couldn't be simpler:
-
-Yes, this could be your entire gulp file.
-
-```
-var gulp = require('gulp'),
-    deployer = require('api-deploy').create({ /* YourConfigHere */ });
-
-deployer.registerTasks(gulp);
-
-// Now, you can run:
-// - `gulp api-deploy`
-// - `gulp generate-sdk`
-// - `gulp deploy-lambdas`
-// - `gulp generate-swagger`
-// - `gulp api-deploy --name /accounts`
-// - `gulp api-deploy --name operationId`
-// - `gulp deploy-lambdas --name /accounts`
-```
-
-Want to see our gulp file? [Here it is.](https://github.com/dallasread/api-deploy/tree/master/example-api/gulpfile.js)
-
-## And... one more thing.
-
-```
-deployer.generateSDK();
-```
+- `generate-sdk lambda`
+- `generate-sdk local`
+- `generate-sdk local --prettify`
+- `api-deploy lambda`
+- `api-deploy lambda /route/1 /other {operationId}`
+- `api-deploy lambda --sdk --prettify`
 
 ## This will give you a Node/Browser JS SDK:
 
 ```
-MyAPI.accountsCreate(data, function(err, data) {
+MyAPI.accountsCreate(data, [headers], function(err, data) {
     console.log('Response from Lambda/ApiGateway', err, data);
 });
 ```

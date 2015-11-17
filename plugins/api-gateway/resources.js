@@ -1,5 +1,5 @@
 var async = require('async'),
-    Wrapper = require('../methods/wrapper');
+    Wrapper = require('../../utils/wrapper');
 
 function getResourceID(resource) {
     return resource && resource.data &&
@@ -8,22 +8,6 @@ function getResourceID(resource) {
 }
 
 module.exports = {
-    findResource: function findResource(path) {
-        var _ = this,
-            resource;
-
-        for (var i = 0; i < _.resources.length; i++) {
-            resource = _.resources[i];
-
-            if (
-                resource._path === path ||
-                resource._path === path + '/'
-            ) {
-                return resource;
-            }
-        }
-    },
-
     deployRestAPIResources: function deployRestAPIResources(done) {
         var _ = this;
 

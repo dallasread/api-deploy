@@ -1,4 +1,4 @@
-var Utils = require('../utils'),
+var Utils = require('../../utils'),
     fs = require('fs'),
     async = require('async'),
     browserify = require('browserify'),
@@ -9,17 +9,19 @@ var Utils = require('../utils'),
     pluralize = require('pluralize');
 
 module.exports = {
-    deployLambdas: function deployLambdas(ids, done) {
+    deployLambdas: function deployLambdas(args, options, done) {
         var _ = this,
             lambdaMethods = [];
 
-        _.logger.log('Initiating Lambda Deploy');
+        args = args || [];
 
-        var methods = _.findMethods(ids);
+        _.APIDeploy.logger.log('Initiating Lambda Deploy');
+
+        var methods = _.APIDeploy.findMethods(args);
 
         if (!methods.length) {
-            var err = new Error('No Lambdas found: `' + ids.join('`, `') + '`.');
-            _.logger.error(err);
+            var err = new Error('No Lambdas found: `' + args.join('`, `') + '`.');
+            _.APIDeploy.logger.error(err);
             return done(err);
         } else {
             for (var i = 0; i < methods.length; i++) {
@@ -29,13 +31,12 @@ module.exports = {
             }
         }
 
-        _.logger.log('Deploying ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
+        _.APIDeploy.logger.log('Deploying ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
 
         async.each(lambdaMethods, function(method, next) {
             _.deployLambda(method, next);
         }, function() {
-            _.saveSwagger();
-            _.logger.log('Deployed ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
+            _.APIDeploy.logger.log('Deployed ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
             done();
         });
     },
@@ -43,7 +44,7 @@ module.exports = {
     deployLambda: function deployLambda(method, done) {
         var _ = this;
 
-        _.logger.log('Compiling Lambda               - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Compiling Lambda               - ' + method.data.operationId);
 
         var zipPath = './tmp/' + method.data.operationId + '.zip';
 
@@ -61,12 +62,12 @@ module.exports = {
         .bundle()
         .pipe(source(method.data['x-amazon-lambda'].handler))
         .pipe(buffer())
-        .pipe(uglify(_.defaults.uglify))
+        .pipe(uglify(_.uglify))
         .pipe(zip.dest(zipPath))
         .on('end', function zipComplete() {
             var zip = fs.readFileSync(zipPath);
 
-            fs.unlinkSync(zipPath);
+            // fs.unlinkSync(zipPath);
 
             if (method.data['x-amazon-lambda'].arn) {
                 _.updateLambda(method, zip, done);
@@ -93,7 +94,7 @@ module.exports = {
                 }
             };
 
-        _.logger.log('Creating Lambda                - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Creating Lambda                - ' + method.data.operationId);
 
         _.AWSLambda.createFunction(options, function(err, data) {
             if (err) {
@@ -102,12 +103,12 @@ module.exports = {
                     err.hint += 'Add the ARN in the config file for `' + method.data.operationId + '` OR delete it from the AWS Console, then re-deploy.';
                 }
 
-                _.logger.error(err);
+                _.APIDeploy.logger.error(err);
             } else {
                 var swaggerLambda = method.data['x-amazon-lambda'];
                 swaggerLambda.arn = data.FunctionArn;
                 if (data.Role !== defaultLambda.role) swaggerLambda.role = data.Role;
-                _.logger.log('Created Lambda                 - ' + method.data.operationId);
+                _.APIDeploy.logger.log('Created Lambda                 - ' + method.data.operationId);
             }
 
             done(err, data);
@@ -120,7 +121,7 @@ module.exports = {
 
         var lambda = method.data['x-amazon-lambda'];
 
-        _.logger.log('Updating Lambda                - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Updating Lambda                - ' + method.data.operationId);
 
         async.series([
             function updateCode(next) {
@@ -133,7 +134,7 @@ module.exports = {
                     if (err) {
                         err.hint = 'This Lambda `' + method.data.operationId + '` doesn\'t exist at AWS. Delete the ARN in the config file for `' + method.data.operationId + '` and re-deploy.';
                     } else {
-                        _.logger.log('Updated Lambda Code            - ' + method.data.operationId);
+                        _.APIDeploy.logger.log('Updated Lambda Code            - ' + method.data.operationId);
                     }
 
                     next(err, data);
@@ -151,14 +152,14 @@ module.exports = {
 
                 _.AWSLambda.updateFunctionConfiguration(options, function(err, data) {
                     if (!err) {
-                        _.logger.log('Updated Lambda Config          - ' + method.data.operationId);
+                        _.APIDeploy.logger.log('Updated Lambda Config          - ' + method.data.operationId);
                     }
 
                     next(err, data);
                 });
             }
         ], function (err, results) {
-            if (err) return _.logger.error(err);
+            if (err) return _.APIDeploy.logger.error(err);
             done();
         });
     }
