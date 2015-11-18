@@ -22,3 +22,5 @@ var awsDefaults = {
 deployer.plugins.lambda.configure(awsDefaults);
 deployer.plugins.local.configure(awsDefaults);
 deployer.plugins.apigateway.configure(awsDefaults);
+
+module.exports = deployer;

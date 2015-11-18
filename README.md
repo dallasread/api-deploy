@@ -44,6 +44,7 @@ var deployDefaults = {
 deployer.plugins.lambda.configure(deployDefaults);
 deployer.plugins.local.configure(deployDefaults);
 
+module.exports = deployer;
 ```
 
 ## Now, you can run commands like:
