@@ -1,8 +1,7 @@
-var deployer = require('../').configure({
+var deployer = require('api-deploy').configure({
     sdk: {
         url: 'http://my-api.com',
-        name: 'MySampleAPI',
-        path: './sdk.js'
+        name: 'MySampleAPI'
     },
     swagger: {
         path: './swagger.json'

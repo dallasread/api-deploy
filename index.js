@@ -1,4 +1,4 @@
-var deployer = require('./api-deploy').create();
+var deployer = require('./deployer').create();
 
 deployer.registerPlugin( require('./plugins/lambda') );
 deployer.registerPlugin( require('./plugins/local') );
