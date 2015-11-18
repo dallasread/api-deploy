@@ -59,7 +59,7 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = '{{_method}}' === 'GET' ? request.query : request.payload,
+                event = ('{{_method}}' === 'GET' ? request.query : request.payload) || {},
                 key;
 
             for (key in request.headers) {
