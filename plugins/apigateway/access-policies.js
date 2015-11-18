@@ -11,7 +11,7 @@ module.exports = {
     deployRestAPIAccessPolicies: function deployRestAPIAccessPolicies(done) {
         var _ = this;
 
-        async.each(_.methods, function(method, done) {
+        async.each(_.APIDeploy.methods, function(method, done) {
             _.deployRestAPIAccessPolicy(method, done);
         }, done);
     },
@@ -19,9 +19,9 @@ module.exports = {
     updateRestAPIAccessPolicies: function updateRestAPIAccessPolicies(ids, done) {
         var _ = this;
 
-        _.findMethods(ids);
+        _.APIDeploy.findMethods(ids);
 
-        async.each(_.methods, function(method, done) {
+        async.each(_.APIDeploy.methods, function(method, done) {
             _.createRestAPIAccessPolicy(method, done);
         }, done);
     },

@@ -41,6 +41,7 @@ var apigateway = module.exports = Plugin.create({
 });
 
 apigateway.defineProperties(require('./access-policies'));
+apigateway.defineProperties(require('./aws-request'));
 apigateway.defineProperties(require('./deployments'));
 apigateway.defineProperties(require('./integrations'));
 apigateway.defineProperties(require('./methods'));

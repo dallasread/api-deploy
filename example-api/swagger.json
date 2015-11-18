@@ -83,7 +83,8 @@
                                 "application/json": "Empty"
                             }
                         }
-                    }
+                    },
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE/invocations"
                 }
             },
             "patch": {
@@ -138,6 +139,9 @@
                         }
                     }
                 }
+            },
+            "x-amazon-apigateway-resource": {
+                "id": "z05ti8"
             }
         },
         "/hello/world": {
@@ -225,6 +229,9 @@
                         }
                     }
                 }
+            },
+            "x-amazon-apigateway-resource": {
+                "id": "tqcgno"
             }
         },
         "/hello": {
@@ -310,9 +317,21 @@
                                 "application/json": "Empty"
                             }
                         }
-                    }
+                    },
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET/invocations"
                 }
+            },
+            "x-amazon-apigateway-resource": {
+                "id": "aag0pn"
+            }
+        },
+        "/": {
+            "x-amazon-apigateway-resource": {
+                "id": "jjmbnrgo7i"
             }
         }
+    },
+    "x-amazon-apigateway-restapi": {
+        "id": "ngv8h2emp2"
     }
 }

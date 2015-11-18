@@ -10,7 +10,7 @@ module.exports = {
     deployRestAPIMethods: function deployRestAPIMethods(done) {
         var _ = this;
 
-        async.eachSeries(_.methods, function(method, done) {
+        async.eachSeries(_.APIDeploy.methods, function(method, done) {
             _.deployRestAPIMethod(method, done);
         }, done);
     },

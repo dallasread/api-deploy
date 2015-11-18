@@ -10,10 +10,10 @@ module.exports = {
     deployRestAPIIntegrations: function deployRestAPIIntegrations(done) {
         var _ = this;
 
-        _.findMethods();
+        _.APIDeploy.findMethods();
 
-        async.each(_.methods, function(method, done) {
-            _.deployRestAPIIntegration(method, done);
+        async.each(_.APIDeploy.methods, function(method, next) {
+            _.deployRestAPIIntegration(method, next);
         }, done);
     },
 
@@ -67,7 +67,8 @@ module.exports = {
 
             method.data['x-amazon-apigateway-integration'].uri = integration.uri;
 
-            _.createRestAPIIntegrationResponse(method, function() {
+            _.createRestAPIIntegrationResponse(method, function(err, data) {
+                if (err) return done(err);
                 _.APIDeploy.logger.log('Created Integration            - ' + method._path + ' (' + method._method + ')');
                 done();
             });

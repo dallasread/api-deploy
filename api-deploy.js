@@ -84,7 +84,6 @@ APIDeploy.definePrototype({
     }
 });
 
-APIDeploy.definePrototype(require('./utils/aws-request'));
 APIDeploy.definePrototype(require('./utils/find'));
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
 

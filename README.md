@@ -1,6 +1,6 @@
 # API Deploy
 
-API Deploy is a Command Line Tool to publish your Amazon Lambda functions. It also exports an SDK to use on the Web & other Node apps (more platforms to come). Your SDK and Lambdas are both built based your project's `deployfile.js`.
+API Deploy is a Command Line Tool to publish your API. Currently, AWS Lambda is implemented, with API Gateway on the way. You can also export an SDK to use on the Web or Node (more platforms to come). Your SDK and Lambdas are both built based your project's `deployfile.js`.
 
 ## To use API Deploy:
 

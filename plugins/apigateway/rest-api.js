@@ -16,17 +16,17 @@ module.exports = {
         }
 
         async.series([
-            function createOrUpdateRestAPI(done) {
+            function createOrUpdateRestAPI(next) {
                 var exists = _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'];
 
                 if (exists && exists.id) {
-                    _.updateRestAPI(done);
+                    _.updateRestAPI(next);
                 } else {
-                    _.createRestAPI(done);
+                    _.createRestAPI(next);
                 }
             },
             function deployRestAPIResources(next) {
-                _.findMethods(args);
+                _.APIDeploy.findMethods(args);
                 _.deployRestAPIResources(next);
             },
             function deployRestAPIMethods(next) {
@@ -39,11 +39,9 @@ module.exports = {
                 _.createRestAPIDeployment(options, next);
             },
             function saveSwagger(next) {
-                _.saveSwagger(next);
+                _.APIDeploy.saveSwagger(next);
             }
-        ], function() {
-            done();
-        });
+        ], done);
     },
 
     createRestAPI: function createRestAPI(done) {

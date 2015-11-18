@@ -1,4 +1,4 @@
-var deployer = require('/Users/dread/apps/api-deploy').configure({
+var deployer = require('api-deploy').configure({
     sdk: {
         url: 'http://my-api.com',
         name: 'MySampleAPI',

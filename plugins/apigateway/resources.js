@@ -11,7 +11,7 @@ module.exports = {
     deployRestAPIResources: function deployRestAPIResources(done) {
         var _ = this;
 
-        async.eachSeries(_.resources, function(resource, next) {
+        async.eachSeries(_.APIDeploy.resources, function(resource, next) {
             _.deployRestAPIResource(resource, next);
         }, done);
     },
@@ -25,7 +25,7 @@ module.exports = {
         } else {
             var paths = _.APIDeploy.swagger.data.paths,
                 parentPath = resource._path.replace(/\/$/, '').replace(/\/[^\/]+$/, ''),
-                parent = _.findResource(parentPath);
+                parent = _.APIDeploy.findResource(parentPath);
 
             if (parent === resource) return done(null, resource);
 
