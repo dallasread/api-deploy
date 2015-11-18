@@ -6,7 +6,7 @@ module.exports = {
         var _ = this,
             opts = {
                 service: 'apigateway',
-                region: _.defaults.aws.region,
+                region: _.aws.region,
                 method: data.method,
                 path: data.path
             };
@@ -14,8 +14,8 @@ module.exports = {
         if (data.body) opts.body = JSON.stringify(data.body);
 
         opts = aws4.sign(opts, {
-            accessKeyId: _.defaults.aws.accessKeyId,
-            secretAccessKey: _.defaults.aws.secretAccessKey
+            accessKeyId: _.aws.accessKeyId,
+            secretAccessKey: _.aws.secretAccessKey
         });
 
         var req = https.request(opts, function(res) {

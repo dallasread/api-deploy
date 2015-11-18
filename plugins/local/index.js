@@ -5,7 +5,8 @@ module.exports = Plugin.create({
     name: 'local',
     defaults: {
         sdk: {
-            url: 'http://localhost:8000'
+            url: 'http://localhost:8000',
+            path: './sdk.js'
         },
         local: {
             template: __dirname + '/templates/hapi.hbs',

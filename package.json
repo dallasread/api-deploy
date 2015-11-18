@@ -4,8 +4,7 @@
   "description": "API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web. Your SDK and Lambdas are both built based on the `config.json` that you supply.",
   "main": "./index.js",
   "bin": {
-    "api-deploy": "./bin/api.js",
-    "generate-sdk": "./bin/sdk.js"
+    "api": "./bin/api.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

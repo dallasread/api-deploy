@@ -80,7 +80,7 @@ module.exports = {
     createLambda: function createLambda(method, zip, done) {
         var _ = this,
             lambda = method.data['x-amazon-lambda'],
-            defaultLambda = _.defaults.lambda,
+            defaultLambda = _.lambda,
             options = {
                 FunctionName:   method.data.operationId,
                 Description:    lambda.description,
@@ -117,7 +117,7 @@ module.exports = {
 
     updateLambda: function updateLambda(method, zip, done) {
         var _ = this,
-            defaultLambda = _.defaults.lambda;
+            defaultLambda = _.lambda;
 
         var lambda = method.data['x-amazon-lambda'];
 

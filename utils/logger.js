@@ -5,9 +5,6 @@ module.exports = {
     log: function() {
         var args = [];
 
-        args.push(gutil.colors.blue(pluginName));
-        args.push(gutil.colors.blue('-'));
-
         for (var key in arguments) {
             args.push(gutil.colors.blue(arguments[key]));
         }

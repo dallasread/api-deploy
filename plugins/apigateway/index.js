@@ -1,25 +1,19 @@
 var Plugin = require('../../lib/plugin'),
     AWS = require('aws-sdk');
 
-var Lambda = module.exports = Plugin.create({
-    name: 'lambda',
+var apigateway = module.exports = Plugin.create({
+    name: 'apigateway',
     defaults: {
-        lambda: {
-            memorySize: 128,
-            role: null,
-            timeout: 60,
-            runtime: 'nodejs'
-        },
         sdk: {
-            template: __dirname + '/templates/sdk.hbs'
+            path: './sdk.js'
         },
         aws: {}
     },
     cli: [
-        // ['r', 'routes[=ARG+]', 'Set the routes you wish to deploy']
+        ['s', 'stage[=ARG]', 'Set the stage to deploy']
     ],
     deployAPI: function deployAPI(args, options, done) {
-        this.deployLambdas(args, options, done);
+        this.deployRestAPI(args, options, done);
     },
     afterConfigure: function afterConfigure() {
         var _ = this;
@@ -46,4 +40,9 @@ var Lambda = module.exports = Plugin.create({
     }
 });
 
-Lambda.defineProperties(require('./deploy'));
+apigateway.defineProperties(require('./access-policies'));
+apigateway.defineProperties(require('./deployments'));
+apigateway.defineProperties(require('./integrations'));
+apigateway.defineProperties(require('./methods'));
+apigateway.defineProperties(require('./resources'));
+apigateway.defineProperties(require('./rest-api'));

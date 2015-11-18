@@ -79,7 +79,6 @@ module.exports = {
             for (i = 0; i < _.methods.length; i++) {
                 method = _.methods[i];
 
-
                 if (
                     (
                         _.doesMethodExistInPath(method._path, ids)

@@ -50,13 +50,14 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = '{{_method}}' === 'GET' ? request.query : request.payload;
+                event = '{{_method}}' === 'GET' ? request.query : request.payload,
+                key;
 
-            for (var key in request.headers) {
+            for (key in request.headers) {
                 event[key] = request.headers[key];
             }
 
-            for (var key in request.params) {
+            for (key in request.params) {
                 event[key] = request.params[key];
             }
 

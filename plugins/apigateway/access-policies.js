@@ -39,10 +39,10 @@ module.exports = {
     createRestAPIAccessPolicy: function createRestAPIAccessPolicy(method, done) {
         var _ = this,
             lambda = new AWS.Lambda(),
-            accountNumber = _.defaults.lambda.role.replace(/[^\d]+/g, ''),
+            accountNumber = _.lambda.role.replace(/[^\d]+/g, ''),
             StatementId = 'api-deploy-access';
 
-        _.logger.log('Creating Access Policy         - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Access Policy         - ' + method._path + ' (' + method._method + ')');
 
         lambda.removePermission({
             FunctionName: method.data.operationId,
@@ -55,15 +55,15 @@ module.exports = {
                 StatementId: StatementId,
                 SourceArn:
                     'arn:aws:execute-api:' +
-                    _.defaults.aws.region + ':' +
+                    _.aws.region + ':' +
                     accountNumber + ':' +
-                    _.swagger.data['x-amazon-apigateway-restapi'].id + '/*/' +
+                    _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id + '/*/' +
                     method._method +
                     method._path.replace(/\/$/, '')
             }, function(err, data) {
                 if (err) return done(err);
 
-                _.logger.log('Created Access Policy          - ' + method._path + ' (' + method._method + ')');
+                _.APIDeploy.logger.log('Created Access Policy          - ' + method._path + ' (' + method._method + ')');
 
                 done(err, data);
             });
@@ -73,8 +73,8 @@ module.exports = {
     updateRestAPIAccessPolicy: function updateRestAPIAccessPolicy(method, done) {
         var _ = this;
 
-        _.logger.log('Updating Access Policy         - ' + method._path + ' (' + method._method + ')');
-        _.logger.log('Updated Access Policy          - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updating Access Policy         - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updated Access Policy          - ' + method._path + ' (' + method._method + ')');
 
         done();
     }

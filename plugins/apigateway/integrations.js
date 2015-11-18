@@ -45,18 +45,18 @@ module.exports = {
         if (method.data['x-amazon-lambda']) {
             body.httpMethod = integration.httpMethod;
             body.uri = 'arn:aws:apigateway:' +
-                _.defaults.aws.region +
+                _.aws.region +
                 ':lambda:path/2015-03-31/functions/' +
                 method.data['x-amazon-lambda'].arn +
                 '/invocations';
 
-            // body.credentials = _.defaults.lambda.role;
+            // body.credentials = _.lambda.role;
         }
 
-        _.logger.log('Creating Integration           - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Integration           - ' + method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
-            path: '/restapis/' + _.swagger.data['x-amazon-apigateway-restapi'].id +
+            path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
                 '/resources/' + method._resource.data['x-amazon-apigateway-resource'].id +
                 '/methods/' + method._method +
                 '/integration',
@@ -68,7 +68,7 @@ module.exports = {
             method.data['x-amazon-apigateway-integration'].uri = integration.uri;
 
             _.createRestAPIIntegrationResponse(method, function() {
-                _.logger.log('Created Integration            - ' + method._path + ' (' + method._method + ')');
+                _.APIDeploy.logger.log('Created Integration            - ' + method._path + ' (' + method._method + ')');
                 done();
             });
         });
@@ -77,8 +77,8 @@ module.exports = {
     updateRestAPIIntegration: function updateRestAPIIntegration(method, done) {
         var _ = this;
 
-        _.logger.log('Updating Integration           - ' + method._path + ' (' + method._method + ')');
-        _.logger.log('Updated Integration            - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updating Integration           - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updated Integration            - ' + method._path + ' (' + method._method + ')');
 
         done();
     },
@@ -94,10 +94,10 @@ module.exports = {
             responseTemplates[key] = typeof val === 'object' ? JSON.stringify(val, null, 4) : null;
         }
 
-        _.logger.log('Creating Integration Response  - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Integration Response  - ' + method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
-            path: '/restapis/' + _.swagger.data['x-amazon-apigateway-restapi'].id +
+            path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
                 '/resources/' + method._resource.data['x-amazon-apigateway-resource'].id +
                 '/methods/' + method._method +
                 '/integration/responses/200',
@@ -110,7 +110,7 @@ module.exports = {
         }, function(err, integration) {
             if (err) return done(err);
 
-            _.logger.log('Created Integration Response   - ' + method._path + ' (' + method._method + ')');
+            _.APIDeploy.logger.log('Created Integration Response   - ' + method._path + ' (' + method._method + ')');
 
             done();
         });

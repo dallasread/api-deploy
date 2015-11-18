@@ -23,7 +23,7 @@ module.exports = {
         if (getResourceID(resource)) {
             _.updateRestAPIResource(resource, done);
         } else {
-            var paths = _.swagger.data.paths,
+            var paths = _.APIDeploy.swagger.data.paths,
                 parentPath = resource._path.replace(/\/$/, '').replace(/\/[^\/]+$/, ''),
                 parent = _.findResource(parentPath);
 
@@ -61,17 +61,17 @@ module.exports = {
             path = resource._path,
             parent = resource._parent;
 
-        _.logger.log('Creating Resource              - ' + path);
+        _.APIDeploy.logger.log('Creating Resource              - ' + path);
 
         _.AWSRequest({
-            path: '/restapis/' + _.swagger.data['x-amazon-apigateway-restapi'].id + '/resources/' + resource._parent,
+            path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id + '/resources/' + resource._parent,
             method: 'POST',
             body: {
                 pathPart: pathPart
             }
         }, function(err, r) {
             if (err) {
-                _.logger.error(err);
+                _.APIDeploy.logger.error(err);
                 return done(err);
             }
 
@@ -82,7 +82,7 @@ module.exports = {
             resource._path = path;
             resource._parent = parent;
 
-            _.logger.log('Created Resource               - ' + path);
+            _.APIDeploy.logger.log('Created Resource               - ' + path);
 
             done(null, resource);
         });
@@ -91,8 +91,8 @@ module.exports = {
     updateRestAPIResource: function updateRestAPIResource(resource, done) {
         var _ = this;
 
-        _.logger.log('Updating Resource              - ' + resource._path);
-        _.logger.log('Updated Resource               - ' + resource._path);
+        _.APIDeploy.logger.log('Updating Resource              - ' + resource._path);
+        _.APIDeploy.logger.log('Updated Resource               - ' + resource._path);
 
         done(null, resource);
     }

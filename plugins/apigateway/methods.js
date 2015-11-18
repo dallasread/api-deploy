@@ -50,10 +50,10 @@ module.exports = {
             body.requestModels[key] = integration.requestModels[key];
         }
 
-        _.logger.log('Creating Method                - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Method                - ' + method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
-            path: '/restapis/' + _.swagger.data['x-amazon-apigateway-restapi'].id +
+            path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
                 '/resources/' + method._resource.data['x-amazon-apigateway-resource'].id +
                 '/methods/' + method._method,
             method: 'PUT',
@@ -61,7 +61,7 @@ module.exports = {
         }, function(err, newMethod) {
             if (err) return done(err);
 
-            _.logger.log('Created Method                 - ' + method._path + ' (' + method._method + ')');
+            _.APIDeploy.logger.log('Created Method                 - ' + method._path + ' (' + method._method + ')');
 
             _.createRestAPIMethodResponse(method, function() {
                 _.deployRestAPIAccessPolicy(method, function() {
@@ -74,8 +74,8 @@ module.exports = {
     updateRestAPIMethod: function updateRestAPIMethod(method, done) {
         var _ = this;
 
-        _.logger.log('Updating Method                - ' + method._path + ' (' + method._method + ')');
-        _.logger.log('Updated Method                 - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updating Method                - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updated Method                 - ' + method._path + ' (' + method._method + ')');
 
         done();
     },
@@ -96,10 +96,10 @@ module.exports = {
             responseTemplates[key] = val && typeof val === 'object' ? JSON.stringify(val, null, 4) : null;
         }
 
-        _.logger.log('Creating Method Response       - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Method Response       - ' + method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
-            path: '/restapis/' + _.swagger.data['x-amazon-apigateway-restapi'].id +
+            path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
                 '/resources/' + method._resource.data['x-amazon-apigateway-resource'].id +
                 '/methods/' + method._method +
                 '/responses/200',
@@ -112,7 +112,7 @@ module.exports = {
         }, function(err, int) {
             if (err) return done(err);
 
-            _.logger.log('Created Method Response        - ' + method._path + ' (' + method._method + ')');
+            _.APIDeploy.logger.log('Created Method Response        - ' + method._path + ' (' + method._method + ')');
 
             done();
         });

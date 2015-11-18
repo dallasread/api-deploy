@@ -67,11 +67,18 @@ APIDeploy.definePrototype({
         _.swagger = _.swagger || {};
         _.swagger.data = _.readSwagger();
 
-        _.swagger.templates = merge({
-            resource: JSON.stringify(
-                require('./lib/swagger/templates/resource.json')
-            )
-        }, _.swagger.templates || {});
+        _.sdk = merge({
+            path: './sdk.js'
+        }, _.sdk || {});
+
+        _.swagger = merge({
+            path: './swagger.json',
+            templates: {
+                resource: JSON.stringify(
+                    require('./lib/swagger/templates/resource.json')
+                )
+            }
+        }, _.swagger || {});
 
         return _;
     }

@@ -1,7 +1,7 @@
-var APIDeploy = require('./api-deploy'),
-    deployer = APIDeploy.create();
+var deployer = require('./api-deploy').create();
 
 deployer.registerPlugin( require('./plugins/lambda') );
 deployer.registerPlugin( require('./plugins/local') );
+deployer.registerPlugin( require('./plugins/apigateway') );
 
 module.exports = deployer;

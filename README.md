@@ -1,12 +1,10 @@
 # API Deploy
 
-API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web & other Node apps. Your SDK and Lambdas are both built based on the `api.json` that you supply.
+API Deploy is a Command Line Tool to publish your Amazon Lambda functions. It also exports an SDK to use on the Web & other Node apps (more platforms to come). Your SDK and Lambdas are both built based your project's `deployfile.js`.
 
-**API Deploy uses a very simple configuration file to build a Swagger 2.0 spec. It then uses that document to deploy your API.**
+## To use API Deploy:
 
-## To use API Deploy, create it with a simple config:
-
-First, you'll need to `npm install api-deploy -g`. Then create a `deployfile.js` in your project:
+First, you'll need to `npm install api-deploy -g`. This gives you a new terminal command: `api`. Now, create a `deployfile.js` in your project:
 
 ```
 var deployer = require('api-deploy').configure({
@@ -19,8 +17,15 @@ var deployer = require('api-deploy').configure({
         path: './swagger.json'
     },
     routes: {
-        '/accounts': {
-            'post': './accounts/create.js'
+        '/hello': {
+            'get': './hello/world'
+        },
+        '/hello/world': {
+            'post': './hello/world'
+        },
+        '/hello/there': {
+            'patch': './hello/there',
+            'delete': './hello/there'
         }
     }
 });
@@ -43,18 +48,19 @@ deployer.plugins.local.configure(deployDefaults);
 
 ## Now, you can run commands like:
 
-- `generate-sdk lambda`
-- `generate-sdk local`
-- `generate-sdk local --prettify`
-- `api-deploy lambda`
-- `api-deploy lambda /route/1 /other {operationId}`
-- `api-deploy lambda --sdk --prettify`
+- `api deploy lambda` - Deploy your Lambdas to AWS
+- `api deploy apigateway` - Deploy your api to API Gateway
+- `api deploy lambda /accounts /other {operationId}` - Deploy selected Lambdas (also deploys child routes)
+- `api deploy lambda --sdk` - Deploy your Lambdas and build an SDK
+- `api sdk lambda` - Build an SDK that points to your AWS Lambdas!
+- `api sdk local` - Build a local server you can run with `node local`!
+- `api sdk local --prettify` - Build an SDK that is not minified
 
-## This will give you a Node/Browser JS SDK:
+## Use an SDK by including (via Node or Script tag):
 
 ```
 MyAPI.accountsCreate(data, [headers], function(err, data) {
-    console.log('Response from Lambda/ApiGateway', err, data);
+    console.log('Response from your API:', err, data);
 });
 ```
 

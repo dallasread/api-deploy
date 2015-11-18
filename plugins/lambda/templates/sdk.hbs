@@ -56,7 +56,7 @@ API = {
 
         invoke('{{data.x-amazon-lambda.arn}}', data, done);
     {{else}}
-        this.debug && console.warn('Lambda not deployed:', '{{sdk.method}}');
+        this.debug && console.warn('Lambda not deployed:', '{{data.x-api-deploy.sdk.method}}');
     {{/if}}
     },
         {{/if}}

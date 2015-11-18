@@ -2,22 +2,22 @@ var merge = require('deepmerge'),
     async = require('async');
 
 module.exports = {
-    deployRestAPI: function deployRestAPI(options, done) {
+    deployRestAPI: function deployRestAPI(args, options, done) {
         var _ = this;
 
         if (!options.stage) {
-            return done('Please specify a stage with the --stage flag.');
+            return _.APIDeploy.logger.error('Please specify a stage with the --stage flag.');
         }
 
-        _.findMethods(options.ids);
+        _.APIDeploy.findMethods(args);
 
-        if (!_.methods.length) {
-            return done('Methods not found `' + _.methods.join('`, `') + '`');
+        if (!_.APIDeploy.methods.length) {
+            return _.APIDeploy.logger.error('Methods not found `' + _.APIDeploy.methods.join('`, `') + '`');
         }
 
         async.series([
             function createOrUpdateRestAPI(done) {
-                var exists = _.swagger.data['x-amazon-apigateway-restapi'];
+                var exists = _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'];
 
                 if (exists && exists.id) {
                     _.updateRestAPI(done);
@@ -26,7 +26,7 @@ module.exports = {
                 }
             },
             function deployRestAPIResources(next) {
-                _.findMethods(options.ids);
+                _.findMethods(args);
                 _.deployRestAPIResources(next);
             },
             function deployRestAPIMethods(next) {
@@ -49,7 +49,7 @@ module.exports = {
     createRestAPI: function createRestAPI(done) {
         var _ = this;
 
-        _.logger.log('Creating RestAPI');
+        _.APIDeploy.logger.log('Creating RestAPI');
 
         _.AWSRequest({
             path: '/restapis',
@@ -58,21 +58,21 @@ module.exports = {
                 name: _.sdk.name
             }
         }, function(err, restAPI) {
-            if (err) return _.logger.error(err);
+            if (err) return _.APIDeploy.logger.error(err);
 
-            _.swagger.data['x-amazon-apigateway-restapi'] = {
+            _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'] = {
                 id: restAPI.id
             };
 
-            _.logger.log('Finding root route for RestAPI');
+            _.APIDeploy.logger.log('Finding root route for RestAPI');
 
             _.AWSRequest({
                 path: '/restapis/' + restAPI.id + '/resources',
                 method: 'GET'
             }, function(err, resources) {
-                if (err) return _.logger.error(err);
+                if (err) return _.APIDeploy.logger.error(err);
 
-                _.swagger.data.paths = merge(_.swagger.data.paths, {
+                _.APIDeploy.swagger.data.paths = merge(_.APIDeploy.swagger.data.paths, {
                     '/': {
                         'x-amazon-apigateway-resource': {
                             id: resources._embedded.item.id
@@ -80,8 +80,8 @@ module.exports = {
                     }
                 });
 
-                _.logger.log('Root route found for RestAPI');
-                _.logger.log('RestAPI created');
+                _.APIDeploy.logger.log('Root route found for RestAPI');
+                _.APIDeploy.logger.log('RestAPI created');
 
                 done();
             });
@@ -91,8 +91,8 @@ module.exports = {
     updateRestAPI: function updateRestAPI(done) {
         var _ = this;
 
-        _.logger.log('Updating RestAPI');
-        _.logger.log('Updated RestAPI');
+        _.APIDeploy.logger.log('Updating RestAPI');
+        _.APIDeploy.logger.log('Updated RestAPI');
 
         done();
     }

@@ -2,15 +2,24 @@
 
 require(require('path').resolve('./deployfile.js'));
 
-var deployer = require('/Users/dread/Apps/api-deploy'),
-    argv = process.argv.slice(3),
-    pluginName = process.argv[2],
+var deployer = require('/Users/dread/apps/api-deploy'),
+    argv = process.argv.slice(4),
+    pluginName = process.argv[3],
+    action = process.argv[2],
     plugin = deployer.plugins[pluginName];
 
 if (plugin) {
     var args = plugin.cliParser.parse(argv);
     if (args.error) throw args.error;
-    deployer.deployAPI(pluginName, args.argv, args.options);
+
+    switch (action) {
+    case 'deploy':
+        deployer.deployAPI(pluginName, args.argv, args.options);
+        break;
+    case 'sdk':
+        deployer.generateSDK(pluginName, args.argv, args.options);
+        break;
+    }
 } else {
     console.error('No plugin found:', pluginName);
 }
