@@ -1,4 +1,4 @@
-var deployer = require('api-deploy').configure({
+var deployer = require('../').configure({
     sdk: {
         url: 'http://my-api.com',
         name: 'MySampleAPI',
