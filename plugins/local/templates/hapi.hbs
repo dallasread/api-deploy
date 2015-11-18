@@ -1,3 +1,12 @@
+try {
+    require.resolve('aws-sdk');
+    require.resolve('hapi');
+    require.resolve('live-modules');
+} catch(e) {
+    console.error('Unmet dependencies, please run:', 'npm install aws-sdk hapi live-modules');
+    process.exit(e.code);
+}
+
 var AWS = require('aws-sdk');
 
 AWS.config.update({
