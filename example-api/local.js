@@ -1,4 +1,14 @@
-var AWS = require('aws-sdk');
+try {
+    require.resolve('aws-sdk');
+    require.resolve('hapi');
+} catch(e) {
+    console.error('Unmet dependencies, please run:', 'npm install aws-sdk hapi');
+    process.exit(e.code);
+}
+
+var AWS = require('aws-sdk'),
+    Hapi = require('hapi'),
+    server = new Hapi.Server();
 
 AWS.config.update({
     region: 'us-east-1'
@@ -8,10 +18,6 @@ AWS.config.credentials = new AWS.SharedIniFileCredentials({
     profile: 'default'
 });
 
-var Hapi = require('hapi'),
-    server = new Hapi.Server(),
-    lm = require('live-modules').createLiveModules(require);
-
 server.connection({
     host: 'localhost',
     port: 8000,
@@ -19,17 +25,7 @@ server.connection({
 });
 
 (function () {
-    var endpoint;
-
-    lm.require('./hello/world', 'hello', function (err, vrr, mod, status) {
-        console.log('LiveModule', status, vrr);
-
-        if (err) {
-            console.log(err);
-        } else {
-            endpoint = global.hello;
-        }
-    });
+    var endpoint = require('./hello/world');
 
     server.route({
         method: 'GET',
@@ -47,7 +43,7 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = 'GET' === 'GET' ? request.query : request.payload,
+                event = ('GET' === 'GET' ? request.query : request.payload) || {},
                 key;
 
             for (key in request.headers) {
@@ -63,17 +59,7 @@ server.connection({
     });
 }());
 (function () {
-    var endpoint;
-
-    lm.require('./hello/world', 'helloWorld', function (err, vrr, mod, status) {
-        console.log('LiveModule', status, vrr);
-
-        if (err) {
-            console.log(err);
-        } else {
-            endpoint = global.helloWorld;
-        }
-    });
+    var endpoint = require('./hello/world');
 
     server.route({
         method: 'POST',
@@ -91,7 +77,7 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = 'POST' === 'GET' ? request.query : request.payload,
+                event = ('POST' === 'GET' ? request.query : request.payload) || {},
                 key;
 
             for (key in request.headers) {
@@ -107,17 +93,7 @@ server.connection({
     });
 }());
 (function () {
-    var endpoint;
-
-    lm.require('./hello/there', 'helloThere', function (err, vrr, mod, status) {
-        console.log('LiveModule', status, vrr);
-
-        if (err) {
-            console.log(err);
-        } else {
-            endpoint = global.helloThere;
-        }
-    });
+    var endpoint = require('./hello/there');
 
     server.route({
         method: 'DELETE',
@@ -135,7 +111,7 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = 'DELETE' === 'GET' ? request.query : request.payload,
+                event = ('DELETE' === 'GET' ? request.query : request.payload) || {},
                 key;
 
             for (key in request.headers) {
@@ -151,17 +127,7 @@ server.connection({
     });
 }());
 (function () {
-    var endpoint;
-
-    lm.require('./hello/there', 'helloThere', function (err, vrr, mod, status) {
-        console.log('LiveModule', status, vrr);
-
-        if (err) {
-            console.log(err);
-        } else {
-            endpoint = global.helloThere;
-        }
-    });
+    var endpoint = require('./hello/there');
 
     server.route({
         method: 'PATCH',
@@ -179,7 +145,7 @@ server.connection({
                         reply(null, { error: err.message });
                     }
                 },
-                event = 'PATCH' === 'GET' ? request.query : request.payload,
+                event = ('PATCH' === 'GET' ? request.query : request.payload) || {},
                 key;
 
             for (key in request.headers) {
@@ -196,9 +162,6 @@ server.connection({
 }());
 
 server.start(function (err) {
-    if (err) {
-        throw err;
-    }
-
+    if (err) throw err;
     console.log('Server running at:', server.info.uri);
 });

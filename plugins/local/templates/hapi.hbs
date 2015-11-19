@@ -1,13 +1,14 @@
 try {
     require.resolve('aws-sdk');
     require.resolve('hapi');
-    require.resolve('live-modules');
 } catch(e) {
-    console.error('Unmet dependencies, please run:', 'npm install aws-sdk hapi live-modules');
+    console.error('Unmet dependencies, please run:', 'npm install aws-sdk hapi');
     process.exit(e.code);
 }
 
-var AWS = require('aws-sdk');
+var AWS = require('aws-sdk'),
+    Hapi = require('hapi'),
+    server = new Hapi.Server();
 
 AWS.config.update({
     region: '{{aws.region}}'
@@ -16,10 +17,6 @@ AWS.config.update({
 AWS.config.credentials = new AWS.SharedIniFileCredentials({
     profile: '{{aws.profile}}'
 });
-
-var Hapi = require('hapi'),
-    server = new Hapi.Server(),
-    lm = require('live-modules').createLiveModules(require);
 
 server.connection({
     host: '{{local.host}}',
@@ -31,17 +28,7 @@ server.connection({
     {{#if data.x-api-deploy}}
         {{#if data.x-api-deploy.sdk.method}}
 (function () {
-    var endpoint;
-
-    lm.require('{{data.x-amazon-lambda.handler}}', '{{data.x-api-deploy.sdk.method}}', function (err, vrr, mod, status) {
-        console.log('LiveModule', status, vrr);
-
-        if (err) {
-            console.log(err);
-        } else {
-            endpoint = global.{{data.x-api-deploy.sdk.method}};
-        }
-    });
+    var endpoint = require('{{data.x-amazon-lambda.handler}}');
 
     server.route({
         method: '{{_method}}',
@@ -79,9 +66,6 @@ server.connection({
 {{/each}}
 
 server.start(function (err) {
-    if (err) {
-        throw err;
-    }
-
+    if (err) throw err;
     console.log('Server running at:', server.info.uri);
 });

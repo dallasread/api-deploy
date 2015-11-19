@@ -53,7 +53,8 @@ module.exports = deployer;
 - `api deploy apigateway` - Deploy your api to API Gateway
 - `api deploy lambda /accounts /other {operationId}` - Deploy selected Lambdas (also deploys child routes)
 - `api deploy lambda --sdk` - Deploy your Lambdas and generate a connected SDK
-- `api deploy local --sdk` - **Test your Lambdas @ http://localhost:8000 and generate a connected SDK!**
+- `api deploy local --serve --watch --sdk` - **Test your Lambdas @ http://localhost:8000 and generate a connected SDK!**
+- `api deploy local -sw --sdk` - A shortform of the above
 - `api sdk lambda` - Build an SDK that points to your AWS Lambdas!
 - `api sdk local` - Build a local server you can run with `node local`!
 - `api sdk local --prettify` - Build an SDK that is not minified
