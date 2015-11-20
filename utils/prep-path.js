@@ -10,12 +10,15 @@ module.exports = function prepPath(path, options) {
         .replace(/^\.\//, '')
         .split('/').map(function(item) {
             if (options.camelCase || options.humanize) {
-                item = item.replace('.', '');
+                item = item
+                    .replace(/[^A-Za-z0-9-]/g, '');
+
                 return item.charAt(0).toUpperCase() + item.slice(1);
             } else {
                 return item;
             }
         }).join(joiner);
+
 
     if (typeof options.prefix === 'string') {
         path = options.prefix + joiner + path;
