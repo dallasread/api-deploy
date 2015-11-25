@@ -2,6 +2,8 @@
 
 API Deploy is a Command Line Tool to publish your API. Currently, AWS Lambda is implemented, with API Gateway on the way. You can also export an SDK to use on the Web or Node (more platforms to come). Your SDK and Lambdas are both built based your project's `deployfile.js`.
 
+**API Gateway integration is coming soon!**
+
 ## To use API Deploy:
 
 First, you'll need to `npm install api-deploy -g`. This gives you a new terminal command: `api`. Now, create a `deployfile.js` in your project:
@@ -50,7 +52,6 @@ module.exports = deployer;
 ## Now, you can run commands like:
 
 - `api deploy lambda` - Deploy your Lambdas to AWS
-- `api deploy apigateway` - Deploy your api to API Gateway
 - `api deploy lambda /accounts /other {operationId}` - Deploy selected Lambdas (also deploys child routes)
 - `api deploy lambda --sdk` - Deploy your Lambdas and generate a connected SDK
 - `api deploy local --serve --watch --sdk` - **Test your Lambdas @ http://localhost:8000 and generate a connected SDK!**
@@ -62,7 +63,14 @@ module.exports = deployer;
 ## Use an SDK by including (via Node or Script tag):
 
 ```
-MyAPI.accountsCreate(data, [headers], function(err, data) {
+MyAPI.init(new AWS.Lambda()); // If using the Lambda SDK
+
+MyAPI.accountsCreate({
+    headers: {}, // HTTP Headers
+    query: {}, // URL Get Params
+    params: {}, // Dynamic URL segment params (eg. /accounts/{accountID})
+    payload: {} // eg. POST Data
+}, function(err, data) {
     console.log('Response from your API:', err, data);
 });
 ```
@@ -70,3 +78,8 @@ MyAPI.accountsCreate(data, [headers], function(err, data) {
 ## Want to see an example API?
 
 [https://github.com/dallasread/api-deploy/tree/master/example-api](https://github.com/dallasread/api-deploy/tree/master/example-api)
+
+# TODO
+- Find existing lambdas and assign them to Swagger doc (in case of deleting the swagger file).
+- Delete existing lambdas (with namespace prefix)
+- API Gateway integration

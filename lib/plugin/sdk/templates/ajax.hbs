@@ -1,16 +1,11 @@
 var API = {
     debug: false,
+    init: function() {},
 
 {{#each methods}}
     {{#if data.x-api-deploy}}
         {{#if data.x-api-deploy.sdk.method}}
-    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, headers, done) {
-    {{#if data.x-amazon-lambda.arn}}
-        if (!done && typeof headers === 'function') {
-            done = headers;
-            headers = null;
-        }
-
+    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
         if (!done && this.debug) {
             console.warn('No callback supplied.');
         }
@@ -18,28 +13,25 @@ var API = {
         $.ajax({
             method: '{{_method}}',
             url: '{{../sdk.url}}{{_path}}',
-            data: '{{_method}}' === 'GET' ? data : JSON.stringify(data),
+            data: '{{_method}}' === 'GET' ? data.query : JSON.stringify(data.payload),
             contentType: 'application/json; charset=utf-8',
             beforeSend: function (xhr) {
-                for (var key in headers) {
-                    xhr.setRequestHeader(key, headers[key]);
+                for (var key in data.headers) {
+                    xhr.setRequestHeader(key, data.headers[key]);
                 }
             },
-            complete: function(data) {
-                if (data.responseJSON) {
-                    if (data.responseJSON.errorMessage) {
-                        typeof done === 'function' && done(data.responseJSON, null);
+            complete: function(response) {
+                if (response.responseJSON) {
+                    if (response.responseJSON.errorMessage) {
+                        typeof done === 'function' && done(response.responseJSON, null);
                     } else {
-                        typeof done === 'function' && done(null, data.responseJSON);
+                        typeof done === 'function' && done(null, response.responseJSON);
                     }
                 } else {
                     typeof done === 'function' && done(new Error('Could not complete network request.'));
                 }
             }
         });
-    {{else}}
-        this.debug && console.warn('Api Gateway Endpoint not deployed:', '{{data.x-api-deploy.sdk.method}}');
-    {{/if}}
     },
         {{/if}}
     {{/if}}

@@ -53,7 +53,7 @@ module.exports = {
             path: '/restapis',
             method: 'POST',
             body: {
-                name: _.sdk.name
+                name: _.APIDeploy.sdk.name
             }
         }, function(err, restAPI) {
             if (err) return _.APIDeploy.logger.error(err);

@@ -6,7 +6,8 @@ var Utils = require('../../utils'),
     buffer = require('vinyl-buffer'),
     uglify = require('gulp-uglify'),
     zip = require('gulp-vinyl-zip'),
-    pluralize = require('pluralize');
+    pluralize = require('pluralize'),
+    gulpUtil = require('gulp-util');
 
 module.exports = {
     deployLambdas: function deployLambdas(args, options, done) {
@@ -62,7 +63,7 @@ module.exports = {
         .bundle()
         .pipe(source(method.data['x-amazon-lambda'].handler))
         .pipe(buffer())
-        .pipe(uglify(_.uglify))
+        .pipe(uglify(_.uglify).on('error', gulpUtil.log))
         .pipe(zip.dest(zipPath))
         .on('end', function zipComplete() {
             var zip = fs.readFileSync(zipPath);
