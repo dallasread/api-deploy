@@ -24,11 +24,11 @@ var apigateway = module.exports = Plugin.create({
             AWS.config.credentials = new AWS.SharedIniFileCredentials({
                 profile: _.aws.profile
             });
-        }
 
-        _.aws.secretAccessKey = AWS.config.credentials.secretAccessKey;
-        _.aws.accessKeyId = AWS.config.credentials.accessKeyId;
-        _.aws.region = AWS.config.region;
+            _.aws.secretAccessKey = AWS.config.credentials.secretAccessKey;
+            _.aws.accessKeyId = AWS.config.credentials.accessKeyId;
+            _.aws.region = AWS.config.region;
+        }
 
         _.defineProperties({
             writable: true
