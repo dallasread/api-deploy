@@ -26,7 +26,14 @@ AWS.config.update({
 server.connection({
     host: '{{local.host}}',
     port: {{local.port}},
-    routes: { cors: true }
+    routes: {
+        cors: true
+        // cors: {
+        //     origin: ['*'],
+        //     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        //     exposedHeaders: ['authorization']
+        // }
+    }
 });
 
 {{#each methods}}
@@ -57,8 +64,6 @@ server.connection({
                     params: request.params,
                     query: request.query
                 };
-
-            console.log(event);
 
             endpoint.handler(event, context);
         }
