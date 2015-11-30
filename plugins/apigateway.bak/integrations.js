@@ -53,7 +53,7 @@ module.exports = {
             // body.credentials = _.lambda.role;
         }
 
-        _.APIDeploy.logger.log('Creating Integration           - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Integration', method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
             path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
@@ -69,7 +69,7 @@ module.exports = {
 
             _.createRestAPIIntegrationResponse(method, function(err, data) {
                 if (err) return done(err);
-                _.APIDeploy.logger.log('Created Integration            - ' + method._path + ' (' + method._method + ')');
+                _.APIDeploy.logger.log('Created Integration', method._path + ' (' + method._method + ')');
                 done();
             });
         });
@@ -78,8 +78,8 @@ module.exports = {
     updateRestAPIIntegration: function updateRestAPIIntegration(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Updating Integration           - ' + method._path + ' (' + method._method + ')');
-        _.APIDeploy.logger.log('Updated Integration            - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updating Integration', method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updated Integration', method._path + ' (' + method._method + ')');
 
         done();
     },
@@ -95,7 +95,7 @@ module.exports = {
             responseTemplates[key] = typeof val === 'object' ? JSON.stringify(val, null, 4) : null;
         }
 
-        _.APIDeploy.logger.log('Creating Integration Response  - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Integration Response', method._path + ' (' + method._method + ')');
 
         _.AWSRequest({
             path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id +
@@ -111,7 +111,7 @@ module.exports = {
         }, function(err, integration) {
             if (err) return done(err);
 
-            _.APIDeploy.logger.log('Created Integration Response   - ' + method._path + ' (' + method._method + ')');
+            _.APIDeploy.logger.log('Created Integration Response', method._path + ' (' + method._method + ')');
 
             done();
         });

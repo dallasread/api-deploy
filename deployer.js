@@ -1,6 +1,7 @@
 var Generator = require('generate-js'),
     merge = require('deepmerge'),
-    Utils = require('./utils');
+    Utils = require('./utils'),
+    async = require('async');
 
 var APIDeploy = Generator.generate(function APIDeploy() {
     var _ = this;
@@ -8,6 +9,12 @@ var APIDeploy = Generator.generate(function APIDeploy() {
     _.defineProperties({
         plugins: {},
         logger: Utils.logger
+    });
+
+    _.defineProperties({
+        writable: true
+    }, {
+        each: async.each
     });
 });
 
@@ -74,9 +81,9 @@ APIDeploy.definePrototype({
         _.swagger = merge({
             path: './swagger.json',
             templates: {
-                resource: JSON.stringify(
-                    require('./lib/swagger/templates/resource.json')
-                )
+                resource: JSON.stringify({
+                    'options': {}
+                })
             }
         }, _.swagger || {});
 
@@ -84,7 +91,6 @@ APIDeploy.definePrototype({
     }
 });
 
-APIDeploy.definePrototype(require('./utils/find'));
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
 
 module.exports = APIDeploy;

@@ -28,21 +28,20 @@ API = {
             done(null, payload);
         });
     }
+};
 
 {{#each methods}}
-    {{#if data.x-api-deploy}}
-        {{#if data.x-api-deploy.sdk.method}}
-    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
-    {{#if data.x-amazon-lambda.arn}}
-        this.invoke('{{data.x-amazon-lambda.arn}}', data, done);
-    {{else}}
-        this.debug && console.warn('Lambda not deployed:', '{{data.x-api-deploy.sdk.method}}');
-    {{/if}}
-    },
-        {{/if}}
-    {{/if}}
-{{/each}}
+{{#if operationId}}
+{{{ensure-exists 'API' operationId}}}
+API.{{dotterize operationId 1}} = function (data, done) {
+{{#if x-lambda.arn}}
+    this.invoke('{{x-lambda.arn}}', data, done);
+{{else}}
+    this.debug && console.warn('Lambda not deployed:', '{{operationId}}');
+{{/if}}
 };
+{{/if}}
+{{/each}}
 
 if (window) window.{{sdk.name}} = API;
 module.exports = API;

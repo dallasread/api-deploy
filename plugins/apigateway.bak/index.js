@@ -4,23 +4,16 @@ var Plugin = require('../../lib/plugin'),
 var apigateway = module.exports = Plugin.create({
     name: 'apigateway',
     defaults: {
+        sdk: {
+            path: './sdk.js'
+        },
         aws: {}
     },
-    swagger: {
-        template: JSON.stringify({
-            'type': '{{apigateway.type}}',
-            'apiKeyRequired': false,
-            'httpMethod': 'POST',
-            'cacheNamespace': null,
-            'cacheKeyParameters': [],
-            'credentials': null
-        })
-    },
     cli: [
-        // ['r', 'routes[=ARG+]', 'Set the routes you wish to deploy']
+        ['s', 'stage[=ARG]', 'Set the stage to deploy']
     ],
     deployAPI: function deployAPI(args, options, done) {
-        this.deployAPIGateway(args, options, done);
+        this.deployRestAPI(args, options, done);
     },
     afterConfigure: function afterConfigure() {
         var _ = this;
@@ -41,10 +34,10 @@ var apigateway = module.exports = Plugin.create({
     }
 });
 
-apigateway.defineProperties(require('./deploy'));
+apigateway.defineProperties(require('./access-policies'));
+apigateway.defineProperties(require('./aws-request'));
+apigateway.defineProperties(require('./deployments'));
+apigateway.defineProperties(require('./integrations'));
+apigateway.defineProperties(require('./methods'));
+apigateway.defineProperties(require('./resources'));
 apigateway.defineProperties(require('./rest-api'));
-apigateway.defineProperties(require('./stage'));
-apigateway.defineProperties(require('./resource'));
-apigateway.defineProperties(require('./method'));
-apigateway.defineProperties(require('./method-details'));
-apigateway.defineProperties(require('./integration-details'));

@@ -1,5 +1,4 @@
-var Utils = require('../../utils'),
-    fs = require('fs'),
+var fs = require('fs'),
     async = require('async'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
@@ -7,37 +6,41 @@ var Utils = require('../../utils'),
     uglify = require('gulp-uglify'),
     zip = require('gulp-vinyl-zip'),
     pluralize = require('pluralize'),
-    gulpUtil = require('gulp-util');
+    gulpUtil = require('gulp-util'),
+    Finder = require('../../utils/finder'),
+    Utils = require('../../utils');
+
+function lambdaPath(path) {
+    return path
+        .replace(/^[\.\/]+/g, '')
+        .replace(/\.js$/, '') +
+        '.handler';
+}
+
+function isDeployed(method) {
+    return method['x-lambda'] && method['x-lambda'].arn && method['x-lambda'].arn.length;
+}
 
 module.exports = {
     deployLambdas: function deployLambdas(args, options, done) {
-        var _ = this,
-            lambdaMethods = [];
+        var _ = this;
 
-        args = args || [];
+        _.APIDeploy.logger.log('Deploying to Lambda...');
 
-        _.APIDeploy.logger.log('Initiating Lambda Deploy');
+        var deployable = Finder.getAllResourcesToDeploy(_.swagger.data, args.length ? args : ['/']),
+            methods = deployable.methods.filter(function(item) {
+                if (item['x-lambda']) return item;
+            });
 
-        var methods = _.APIDeploy.findMethods(args);
+        _.APIDeploy.logger.log('Deploying ' + methods.length + ' ' + pluralize('Lambda', methods.length));
 
-        if (!methods.length) {
-            var err = new Error('No Lambdas found: `' + args.join('`, `') + '`.');
-            _.APIDeploy.logger.error(err);
-            return done(err);
-        } else {
-            for (var i = 0; i < methods.length; i++) {
-                if (methods[i].data['x-amazon-lambda']) {
-                    lambdaMethods.push(methods[i]);
-                }
-            }
-        }
-
-        _.APIDeploy.logger.log('Deploying ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
-
-        async.each(lambdaMethods, function(method, next) {
+        _.APIDeploy.each(methods, function deploySelectedLambdas(method, next) {
             _.deployLambda(method, next);
-        }, function() {
-            _.APIDeploy.logger.log('Deployed ' + lambdaMethods.length + ' ' + pluralize('Lambda', lambdaMethods.length));
+        }, function deployedSelectedLambdas() {
+            var deployedCount = methods.filter(function(method) { return method.deployed; }).length;
+
+            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' ' + pluralize('Lambda', deployedCount) + ' successfully.');
+
             done();
         });
     },
@@ -45,13 +48,13 @@ module.exports = {
     deployLambda: function deployLambda(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Compiling Lambda               - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Compiling Lambda:', method.pathInfo);
 
-        var zipPath = './tmp/' + method.data.operationId + '.zip';
+        var zipPath = './tmp/' + method.operationId + '.zip';
 
         browserify({
             standalone: 'handler',
-            entries: [method.data['x-amazon-lambda'].handler],
+            entries: [method['x-lambda'].handler],
             bare: true,
             browserField: false,
             builtins: false,
@@ -61,31 +64,39 @@ module.exports = {
         })
         .exclude('aws-sdk')
         .bundle()
-        .pipe(source(method.data['x-amazon-lambda'].handler))
+        .pipe(source(method['x-lambda'].handler))
         .pipe(buffer())
         .pipe(uglify(_.uglify).on('error', gulpUtil.log))
         .pipe(zip.dest(zipPath))
         .on('end', function zipComplete() {
             var zip = fs.readFileSync(zipPath);
 
+            method.set('deployed', false);
+
             // fs.unlinkSync(zipPath);
 
-            if (method.data['x-amazon-lambda'].arn) {
-                _.updateLambda(method, zip, done);
+            if (isDeployed(method)) {
+                _.updateLambda(method, zip, function(err, data) {
+                    if (err) _.APIDeploy.logger.warn(err);
+                    done(null, data);
+                });
             } else {
-                _.createLambda(method, zip, done);
+                _.createLambda(method, zip, function(err, data) {
+                    if (err) _.APIDeploy.logger.warn(err);
+                    done(null, data);
+                });
             }
         });
     },
 
     createLambda: function createLambda(method, zip, done) {
         var _ = this,
-            lambda = method.data['x-amazon-lambda'],
+            lambda = method['x-lambda'],
             defaultLambda = _.lambda,
             options = {
-                FunctionName:   method.data.operationId,
+                FunctionName:   method.operationId,
                 Description:    lambda.description,
-                Handler:        Utils.prepPath(lambda.handler, { joiner: '/' }) + '.handler',
+                Handler:        lambdaPath(lambda.handler),
                 MemorySize:     lambda.memorySize || defaultLambda.memorySize,
                 Role:           lambda.role       || defaultLambda.role,
                 Timeout:        lambda.timeout    || defaultLambda.timeout,
@@ -95,21 +106,18 @@ module.exports = {
                 }
             };
 
-        _.APIDeploy.logger.log('Creating Lambda                - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Creating Lambda:', method.pathInfo);
 
         _.AWSLambda.createFunction(options, function(err, data) {
             if (err) {
                 if (err.message.indexOf('exist') !== -1) {
-                    err.hint = 'This Lambda `' + method.data.operationId + '` exists at AWS already. ';
-                    err.hint += 'Add the ARN in the config file for `' + method.data.operationId + '` OR delete it from the AWS Console, then re-deploy.';
+                    err.hint = 'Add the ARN in the config file for `' + method.operationId + '` OR delete it from the AWS Console, then re-deploy.';
                 }
-
-                _.APIDeploy.logger.error(err);
             } else {
-                var swaggerLambda = method.data['x-amazon-lambda'];
-                swaggerLambda.arn = data.FunctionArn;
-                if (data.Role !== defaultLambda.role) swaggerLambda.role = data.Role;
-                _.APIDeploy.logger.log('Created Lambda                 - ' + method.data.operationId);
+                method.set('deployed', true);
+                lambda.arn = data.FunctionArn;
+                if (data.Role !== defaultLambda.role) lambda.role = data.Role;
+                _.APIDeploy.logger.succeed('Created Lambda:', method.pathInfo);
             }
 
             done(err, data);
@@ -120,9 +128,9 @@ module.exports = {
         var _ = this,
             defaultLambda = _.lambda;
 
-        var lambda = method.data['x-amazon-lambda'];
+        var lambda = method['x-lambda'];
 
-        _.APIDeploy.logger.log('Updating Lambda                - ' + method.data.operationId);
+        _.APIDeploy.logger.log('Updating Lambda:', method.pathInfo);
 
         async.series([
             function updateCode(next) {
@@ -133,9 +141,9 @@ module.exports = {
 
                 _.AWSLambda.updateFunctionCode(options, function(err, data) {
                     if (err) {
-                        err.hint = 'This Lambda `' + method.data.operationId + '` doesn\'t exist at AWS. Delete the ARN in the config file for `' + method.data.operationId + '` and re-deploy.';
+                        err.hint = 'Delete the ARN in the config file for `' + method.operationId + '` and re-deploy.';
                     } else {
-                        _.APIDeploy.logger.log('Updated Lambda Code            - ' + method.data.operationId);
+                        _.APIDeploy.logger.log('Updated Lambda Code:', method.pathInfo);
                     }
 
                     next(err, data);
@@ -145,7 +153,7 @@ module.exports = {
                 var options = {
                     FunctionName:   lambda.arn,
                     Description:    lambda.description,
-                    Handler:        Utils.prepPath(lambda.handler, { joiner: '/' }) + '.handler',
+                    Handler:        lambdaPath(lambda.handler),
                     MemorySize:     lambda.memorySize || defaultLambda.memorySize,
                     Role:           lambda.role       || defaultLambda.role,
                     Timeout:        lambda.timeout    || defaultLambda.timeout
@@ -153,15 +161,19 @@ module.exports = {
 
                 _.AWSLambda.updateFunctionConfiguration(options, function(err, data) {
                     if (!err) {
-                        _.APIDeploy.logger.log('Updated Lambda Config          - ' + method.data.operationId);
+                        _.APIDeploy.logger.log('Updated Lambda Config:', method.pathInfo);
                     }
 
                     next(err, data);
                 });
             }
         ], function (err, results) {
-            if (err) return _.APIDeploy.logger.error(err);
-            done();
+            if (!err) {
+                method.set('deployed', true);
+                _.APIDeploy.logger.succeed('Updated Lambda:', method.pathInfo);
+            }
+
+            done(err, results);
         });
     }
 };

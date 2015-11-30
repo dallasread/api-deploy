@@ -13,6 +13,16 @@ var Lambda = module.exports = Plugin.create({
         sdk: {
             template: __dirname + '/templates/sdk.hbs'
         },
+        swagger: {
+            template: JSON.stringify({
+                handler: '{{handler}}',
+                memorySize: '{{lambda.memorySize}}',
+                role: '{{lambda.role}}',
+                timeout: '{{lambda.timeout}}',
+                runtime: '{{lambda.runtime}}',
+                arn: '{{lambda.arn}}'
+            })
+        },
         aws: {}
     },
     cli: [
