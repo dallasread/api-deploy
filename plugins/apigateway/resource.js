@@ -11,7 +11,9 @@ module.exports = {
         _.APIDeploy.each(resources, function(resource, next) {
             _.deployResource(resource, next);
         }, function(err) {
-            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(resources).length + ' Resources.');
+            var deployedCount = resources.filter(function(resource) { return resource.deployed; }).length;
+
+            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' Resources.');
 
             done(null, resources);
         });
@@ -35,11 +37,15 @@ module.exports = {
     createResource: function createResource(resource, done) {
         var _ = this;
 
+        resource.setHidden('deployed', true);
+
         done();
     },
 
     updateResource: function updateResource(resource, done) {
         var _ = this;
+
+        resource.setHidden('deployed', true);
 
         done();
     }

@@ -5,17 +5,18 @@ function isDeployed(method) {
 }
 
 module.exports = {
-    deployMethods: function deployMethods(methods, done) {
+    deployMethods: function deployMethods(methodsOrResource, done) {
         var _ = this,
+            methods = methodsOrResource,
             path;
 
-        if (typeof methods === 'object') { // It's a resource!
+        if (typeof methodsOrResource === 'object') { // It's a resource!
             var newMethods = [];
 
-            path = methods.path;
+            path = methodsOrResource.path;
 
-            for (var key in methods) {
-                newMethods.push(methods[key]);
+            for (var key in methodsOrResource) {
+                newMethods.push(methodsOrResource[key]);
             }
 
             methods = newMethods;
@@ -26,7 +27,10 @@ module.exports = {
         _.APIDeploy.each(methods, function(method, next) {
             _.deployMethod(method, next);
         }, function(err) {
-            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(methods).length + ' Methods' + (path ? ':' : '.'), path);
+            var deployedCount = methods.filter(function(method) { return method.deployed; }).length;
+
+            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' Methods' + (path ? ':' : '.'), path);
+
             done(null, methods);
         });
     },
@@ -52,6 +56,8 @@ module.exports = {
         _.APIDeploy.logger.log('Creating Method:', method.pathInfo);
         _.APIDeploy.logger.succeed('Created Method:', method.pathInfo);
 
+        method.setHidden('deployed', true);
+
         done();
     },
 
@@ -60,6 +66,8 @@ module.exports = {
 
         _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
         _.APIDeploy.logger.succeed('Updated Method:', method.pathInfo);
+
+        method.setHidden('deployed', true);
 
         done();
     },

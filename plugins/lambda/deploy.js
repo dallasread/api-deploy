@@ -71,7 +71,7 @@ module.exports = {
         .on('end', function zipComplete() {
             var zip = fs.readFileSync(zipPath);
 
-            method.set('deployed', false);
+            method.setHidden('deployed', false);
 
             // fs.unlinkSync(zipPath);
 
@@ -114,7 +114,7 @@ module.exports = {
                     err.hint = 'Add the ARN in the config file for `' + method.operationId + '` OR delete it from the AWS Console, then re-deploy.';
                 }
             } else {
-                method.set('deployed', true);
+                method.setHidden('deployed', true);
                 lambda.arn = data.FunctionArn;
                 if (data.Role !== defaultLambda.role) lambda.role = data.Role;
                 _.APIDeploy.logger.succeed('Created Lambda:', method.pathInfo);
@@ -169,7 +169,7 @@ module.exports = {
             }
         ], function (err, results) {
             if (!err) {
-                method.set('deployed', true);
+                method.setHidden('deployed', true);
                 _.APIDeploy.logger.succeed('Updated Lambda:', method.pathInfo);
             }
 

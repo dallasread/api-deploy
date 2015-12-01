@@ -8,7 +8,7 @@ function setHiddenProperty(obj, key, val) {
 }
 
 function createSetterForHiddenProperty(obj) {
-    return setHiddenProperty(obj, 'set', function(key, val) {
+    return setHiddenProperty(obj, 'setHidden', function(key, val) {
         setHiddenProperty(obj, key, val);
     });
 }
