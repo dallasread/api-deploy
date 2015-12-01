@@ -1,5 +1,3 @@
-var async = require('async');
-
 function isDeployed(resource) {
     return resource['x-apigateway'] && resource['x-apigateway'].id;
 }
@@ -10,10 +8,10 @@ module.exports = {
 
         _.APIDeploy.logger.log('Deploying ' + Object.keys(resources).length + ' Resources...');
 
-        async.each(resources, function(resource, next) {
+        _.APIDeploy.each(resources, function(resource, next) {
             _.deployResource(resource, next);
         }, function(err) {
-            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(resources).length + ' Resources successfully.');
+            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(resources).length + ' Resources.');
 
             done(null, resources);
         });
@@ -23,11 +21,14 @@ module.exports = {
         var _ = this,
             action = isDeployed(resource) ? _.createResource : _.updateResource;
 
-        _.APIDeploy.logger.log('Deploying Resource:', resource.path);
+        _.APIDeploy.logger.log('Deploying Resource:', resource.pathInfo);
 
         action.call(_, resource, function deployedResource(err, data) {
-            _.APIDeploy.logger.succeed('Deployed Resource:', resource.path);
-            done(null, resource);
+            _.deployMethods(resource, function(err, methods) {
+                _.APIDeploy.logger.succeed('Deployed Resource:', resource.pathInfo);
+
+                done(null, resource);
+            });
         });
     },
 

@@ -43,8 +43,9 @@ var apigateway = module.exports = Plugin.create({
 
 apigateway.defineProperties(require('./deploy'));
 apigateway.defineProperties(require('./rest-api'));
-apigateway.defineProperties(require('./stage'));
+apigateway.defineProperties(require('./deployment'));
 apigateway.defineProperties(require('./resource'));
 apigateway.defineProperties(require('./method'));
 apigateway.defineProperties(require('./method-details'));
 apigateway.defineProperties(require('./integration-details'));
+apigateway.defineProperties(require('./aws-request'));

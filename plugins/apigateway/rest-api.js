@@ -1,16 +1,38 @@
+var nestedSet = require('../../utils/nested-set');
+
 function isDeployed(restapi) {
-    return restapi['x-apigateway'];
+    return restapi['x-apigateway'] && restapi['x-apigateway'].id;
 }
 
 module.exports = {
     deployRestAPI: function deployRestAPI(restapi, done) {
-        var _ = this,
-            action = isDeployed(restapi) ? _.updateRestAPI : _.createRestAPI;
+        var _ = this;
 
-        _.APIDeploy.logger.log('Deploying Rest API...');
+        if (isDeployed(restapi)) {
+            _.getRestAPI(restapi, function gotRestAPI(err, restapi) {
+                done(err, restapi);
+            });
+        } else {
+            _.createRestAPI(restapi, function deployedRestAPI(err, data) {
+                done(err, restapi);
+            });
+        }
+    },
 
-        action.call(_, restapi, function deployedRestAPI(err, data) {
-            _.APIDeploy.logger.succeed('Deployed Rest API.');
+    getRestAPI: function getRestAPI(restapi, done) {
+        var _ = this;
+
+        _.AWSRequest({
+            path: '/restapis/' + restapi['x-apigateway'].id,
+            method: 'GET'
+        }, function(err, restAPI) {
+            if (err) {
+                delete restapi['x-apigateway'].id;
+                _.APIDeploy.logger.warn(err);
+                _.APIDeploy.logger.warn('Attempting to create Rest API...');
+                return _.deployRestAPI(restapi, done);
+            }
+
             done(null, restapi);
         });
     },
@@ -18,12 +40,33 @@ module.exports = {
     createRestAPI: function createRestAPI(restapi, done) {
         var _ = this;
 
-        done();
-    },
+        _.APIDeploy.logger.log('Creating Rest API...');
 
-    updateRestAPI: function updateRestAPI(restapi, done) {
-        var _ = this;
+        _.AWSRequest({
+            path: '/restapis',
+            method: 'POST',
+            body: {
+                name: _.sdk.name
+            }
+        }, function(err, restAPI) {
+            if (err) return done(err);
 
-        done();
+            var rootResourceHref = restAPI._links['resource:create'].href,
+                rootResourceId = rootResourceHref.substr(
+                    rootResourceHref.lastIndexOf('/') + 1,
+                    rootResourceHref.length - 1
+                );
+
+            nestedSet(restapi, 'paths./.x-apigateway.id', rootResourceId);
+
+            restapi['x-apigateway'] = {
+                id: restAPI.id
+            };
+
+            _.APIDeploy.logger.succeed('Created Rest API.');
+            _.APIDeploy.saveSwagger();
+
+            done(null, restapi);
+        });
     }
 };

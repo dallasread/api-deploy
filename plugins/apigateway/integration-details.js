@@ -1,23 +1,23 @@
 module.exports = {
-    deployIntegrationRequest: function deployIntegrationRequest(integration, done) {
+    deployIntegrationRequest: function deployIntegrationRequest(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Deploying Integration Request:', '');
-        _.APIDeploy.logger.succeed('Deployed Integration Request:', '');
+        _.APIDeploy.logger.log('Deploying Integration Request:', method.pathInfo);
+        _.APIDeploy.logger.succeed('Deployed Integration Request:', method.pathInfo);
 
         // do stuff
 
-        done(null, integration);
+        done(null, method);
     },
 
-    deployIntegrationResponse: function deployIntegrationResponse(integration, done) {
+    deployIntegrationResponse: function deployIntegrationResponse(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Deploying Integration Response:', '');
-        _.APIDeploy.logger.succeed('Deployed Integration Response:', '');
+        _.APIDeploy.logger.log('Deploying Integration Response:', method.pathInfo);
+        _.APIDeploy.logger.succeed('Deployed Integration Response:', method.pathInfo);
 
         // do stuff
 
-        done(null, integration);
+        done(null, method);
     },
 };

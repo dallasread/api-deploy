@@ -39,7 +39,7 @@ module.exports = {
         }, function deployedSelectedLambdas() {
             var deployedCount = methods.filter(function(method) { return method.deployed; }).length;
 
-            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' ' + pluralize('Lambda', deployedCount) + ' successfully.');
+            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' ' + pluralize('Lambda', deployedCount) + '.');
 
             done();
         });

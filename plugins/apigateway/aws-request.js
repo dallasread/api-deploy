@@ -28,7 +28,7 @@ module.exports = {
             res.on('end', function() {
                 body = JSON.parse(body);
                 if (body.logref) {
-                    console.error(body.message);
+                    // console.error(body.message);
                     return done(body, null);
                 }
 

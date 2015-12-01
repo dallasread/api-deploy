@@ -6,14 +6,27 @@ function isDeployed(method) {
 
 module.exports = {
     deployMethods: function deployMethods(methods, done) {
-        var _ = this;
+        var _ = this,
+            path;
 
-        _.APIDeploy.logger.log('Deploying ' + Object.keys(methods).length + ' Methods...');
+        if (typeof methods === 'object') { // It's a resource!
+            var newMethods = [];
 
-        async.each(methods, function(method, next) {
+            path = methods.path;
+
+            for (var key in methods) {
+                newMethods.push(methods[key]);
+            }
+
+            methods = newMethods;
+        }
+
+        _.APIDeploy.logger.log('Deploying ' + Object.keys(methods).length + ' Methods' + (path ? ':' : '...'), path);
+
+        _.APIDeploy.each(methods, function(method, next) {
             _.deployMethod(method, next);
         }, function(err) {
-            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(methods).length + ' Methods successfully.');
+            _.APIDeploy.logger.succeed('Deployed ' + Object.keys(methods).length + ' Methods' + (path ? ':' : '.'), path);
             done(null, methods);
         });
     },
@@ -22,11 +35,11 @@ module.exports = {
         var _ = this,
             action = isDeployed(method) ? _.createMethod : _.updateMethod;
 
-        _.APIDeploy.logger.log('Deploying Method:', method.path);
+        _.APIDeploy.logger.log('Deploying Method:', method.pathInfo);
 
         action.call(_, method, function deployedMethod(err, data) {
             _.deployMethodDetails(method, function deployedMethodDetails(err, method) {
-                _.APIDeploy.logger.succeed('Deployed Method:', method.path);
+                _.APIDeploy.logger.succeed('Deployed Method:', method.pathInfo);
                 done(null, method);
             });
         });
@@ -36,11 +49,17 @@ module.exports = {
     createMethod: function createMethod(method, done) {
         var _ = this;
 
+        _.APIDeploy.logger.log('Creating Method:', method.pathInfo);
+        _.APIDeploy.logger.succeed('Created Method:', method.pathInfo);
+
         done();
     },
 
     updateMethod: function updateMethod(method, done) {
         var _ = this;
+
+        _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
+        _.APIDeploy.logger.succeed('Updated Method:', method.pathInfo);
 
         done();
     },
@@ -48,7 +67,7 @@ module.exports = {
     deployMethodDetails: function deployMethodDetails(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Deploying Method Details:', method.path);
+        _.APIDeploy.logger.log('Deploying Method Details:', method.pathInfo);
 
         async.parallel([
             function deployMethodRequest(next) {
@@ -67,7 +86,7 @@ module.exports = {
                 _.deployMethodResponse(method, next);
             }
         ], function() {
-            _.APIDeploy.logger.succeed('Deployed Method Details:', method.path);
+            _.APIDeploy.logger.succeed('Deployed Method Details:', method.pathInfo);
             done(null, method);
         });
     }
