@@ -74,28 +74,21 @@ function getAllResourcesToDeploy(swagger, paths) {
     return deploy;
 }
 
+function findParent(swagger, path) {
+    var parentPath = path.split('/').filter(function(item) {
+        return item.length;
+    });
+
+    parentPath.pop();
+
+    return swagger.paths['/' + parentPath.join('/')];
+}
+
 module.exports = {
+    findParent: findParent,
     generateResources: generateResources,
     generateResourcesAll: generateResourcesAll,
     getChildrenResources: getChildrenResources,
     getAllChildrenResources: getAllChildrenResources,
     getAllResourcesToDeploy: getAllResourcesToDeploy
 };
-
-// var swag = {
-//     paths: {
-//         '/': {},
-//         '/a': {},
-//         '/a/1': {},
-//         '/a/2': {},
-
-//         '/b': {},
-//         '/b/1': {},
-//         '/b/1/a': {},
-//         '/b/1/b': {},
-//         '/b/1/c': {},
-//         '/b/2': {},
-//     }
-// };
-//
-// console.log(JSON.stringify(getAllResourcesToDeploy(['/b/1']), null, 2));

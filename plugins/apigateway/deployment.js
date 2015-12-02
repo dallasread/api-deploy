@@ -15,12 +15,16 @@ module.exports = {
             }
         }, function(err, resource) {
             if (err) {
-                return done(err);
+                _.APIDeploy.logger.warn(err);
+
+                if (err.indexOf('any methods') !== -1) {
+                    _.APIDeploy.logger.warn('No deployment was created for:', options.stage);
+                }
+            } else {
+                _.APIDeploy.logger.succeed('Deployed deployment:', options.stage);
             }
 
-            _.APIDeploy.logger.succeed('Deployed deployment:', options.stage);
-
-            done();
+            done(null, restapi);
         });
     }
 };

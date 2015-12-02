@@ -1,4 +1,6 @@
-var async = require('async');
+var async = require('async'),
+    pluralize = require('pluralize'),
+    nestedSet = require('../../utils/nested-set');
 
 function isDeployed(method) {
     return method['x-apigateway'] && method['x-apigateway'].id;
@@ -16,7 +18,9 @@ module.exports = {
             path = methodsOrResource.path;
 
             for (var key in methodsOrResource) {
-                newMethods.push(methodsOrResource[key]);
+                if (key.slice(0, 2) !== 'x-') {
+                    newMethods.push(methodsOrResource[key]);
+                }
             }
 
             methods = newMethods;
@@ -29,7 +33,7 @@ module.exports = {
         }, function(err) {
             var deployedCount = methods.filter(function(method) { return method.deployed; }).length;
 
-            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' Methods' + (path ? ':' : '.'), path);
+            _.APIDeploy.logger.succeed('Deployed ' + deployedCount + ' ' + pluralize('Method', deployedCount) + (path ? ':' : '.'), path);
 
             done(null, methods);
         });
@@ -37,39 +41,76 @@ module.exports = {
 
     deployMethod: function deployMethod(method, done) {
         var _ = this,
-            action = isDeployed(method) ? _.createMethod : _.updateMethod;
+            funcs = [];
 
         _.APIDeploy.logger.log('Deploying Method:', method.pathInfo);
 
-        action.call(_, method, function deployedMethod(err, data) {
+        if (!isDeployed(method)) {
+            funcs.push(function createMethod(next) {
+                _.createMethod(method, function createdMethod(err, method) {
+                    if (err) {
+                        _.APIDeploy.logger.warn(err);
+                    }
+
+                    next(null, method);
+                });
+            });
+        }
+
+        funcs.push(function deployMethodDetails(next) {
             _.deployMethodDetails(method, function deployedMethodDetails(err, method) {
+                if (err) {
+                    _.APIDeploy.logger.warn(err);
+                    return next(null, method);
+                }
+
+                method.setHidden('deployed', true);
+
                 _.APIDeploy.logger.succeed('Deployed Method:', method.pathInfo);
-                done(null, method);
+
+                next(null, method);
             });
         });
 
+        async.series(funcs, function(err, data) {
+            if (err) {
+                _.APIDeploy.logger.warn(err);
+            }
+
+            done(null, method);
+        });
     },
 
     createMethod: function createMethod(method, done) {
         var _ = this;
 
         _.APIDeploy.logger.log('Creating Method:', method.pathInfo);
-        _.APIDeploy.logger.succeed('Created Method:', method.pathInfo);
 
-        method.setHidden('deployed', true);
+        if (!method['x-apigateway']) {
+            _.APIDeploy.logger.warn('No API Gateway configuration:', method.pathInfo);
+            return done(null, method);
+        }
 
-        done();
-    },
+        _.AWSRequest({
+            path: '/restapis/' + method.restapi['x-apigateway'].id +
+                '/resources/' + method.resource['x-apigateway'].id +
+                '/methods/' + method.method.toUpperCase(),
+            method: 'PUT',
+            body: {
+                authorizationType: 'NONE'
+            }
+        }, function(err, awsMethod) {
+            if (err) {
+                _.APIDeploy.logger.warn(err);
+                return done(err);
+            }
 
-    updateMethod: function updateMethod(method, done) {
-        var _ = this;
+            _.APIDeploy.logger.succeed('Created Method:', method.pathInfo);
 
-        _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
-        _.APIDeploy.logger.succeed('Updated Method:', method.pathInfo);
+            nestedSet(method, method.method.toLowerCase() + '.x-apigateway.id', awsMethod.id);
 
-        method.setHidden('deployed', true);
-
-        done();
+            done(null, method);
+        });
     },
 
     deployMethodDetails: function deployMethodDetails(method, done) {

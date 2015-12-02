@@ -1,20 +1,24 @@
 var Plugin = require('../../lib/plugin'),
-    AWS = require('aws-sdk');
+    AWS = require('aws-sdk'),
+    fs = require('fs');
 
 var apigateway = module.exports = Plugin.create({
     name: 'apigateway',
     defaults: {
-        aws: {}
+        aws: {},
+        apigateway: {
+            cors: true,
+            type: 'AWS',
+            authorizationType: 'NONE',
+            apiKeyRequired: false,
+            httpMethod: 'POST',
+            cacheNamespace: null,
+            cacheKeyParameters: [],
+            credentials: null
+        }
     },
     swagger: {
-        template: JSON.stringify({
-            'type': '{{apigateway.type}}',
-            'apiKeyRequired': false,
-            'httpMethod': 'POST',
-            'cacheNamespace': null,
-            'cacheKeyParameters': [],
-            'credentials': null
-        })
+        template: fs.readFileSync(__dirname + '/templates/swagger.json', { encoding: 'utf8' })
     },
     cli: [
         // ['r', 'routes[=ARG+]', 'Set the routes you wish to deploy']
@@ -38,7 +42,30 @@ var apigateway = module.exports = Plugin.create({
         }
 
         return _;
-    }
+    },
+
+    beforeSwagger: function beforeSwagger(resourceNames) {
+        var _ = this,
+            i;
+
+        if (!_.apigateway.cors) return;
+
+        for (i = 0; i < resourceNames.length; i++) {
+            _.APIDeploy.swagger.data.paths[resourceNames[i]] = {
+                options: {
+                    'x-apigateway': {
+                        type: 'MOCK',
+                        authorizationType: 'NONE',
+                        apiKeyRequired: false,
+                        httpMethod: 'POST',
+                        cacheNamespace: null,
+                        cacheKeyParameters: [],
+                        credentials: null
+                    }
+                }
+            };
+        }
+    },
 });
 
 apigateway.defineProperties(require('./deploy'));

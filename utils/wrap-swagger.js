@@ -21,6 +21,7 @@ module.exports = function wrapSwagger(swagger) {
 
         setHiddenProperty(resource, 'path', resourcePath);
         setHiddenProperty(resource, 'pathInfo', resourcePath);
+        setHiddenProperty(resource, 'restapi', swagger);
         createSetterForHiddenProperty(resource);
 
         for (var httpMethod in resource) {
@@ -31,6 +32,7 @@ module.exports = function wrapSwagger(swagger) {
                 setHiddenProperty(method, 'path', resourcePath);
                 setHiddenProperty(method, 'pathInfo', resourcePath + ' (' + httpMethod + ')');
                 setHiddenProperty(method, 'resource', resource);
+                setHiddenProperty(method, 'restapi', swagger);
                 createSetterForHiddenProperty(method);
             }
         }

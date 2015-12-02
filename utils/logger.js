@@ -33,8 +33,11 @@ module.exports = {
         });
     },
     warn: function warn(err) {
-        if (typeof err === 'string') err = new Error(err);
-
+        if (err instanceof Array) {
+            err = new Error(prepArgs('red', err).join(' '));
+        } else if (!(err instanceof Error)) {
+            err = new Error(prepArgs('red', arguments).join(' '));
+        }
 
         gutil.log.apply( null, prepArgs('red', [err.message]) );
         if (err.hint) gutil.log.apply( null, prepArgs('red', [err.hint]) );
