@@ -70,12 +70,6 @@ module.exports = {
 
                 delete resource['x-apigateway'].id;
 
-                for (var method in resource) {
-                    if (resource[method] && resource[method]['x-apigateway']) {
-                        delete resource[method]['x-apigateway'].id;
-                    }
-                }
-
                 return _.deployResource(resource, done);
             }
 
@@ -148,10 +142,19 @@ module.exports = {
                 methods = [methods];
             }
 
-            for (var i = 0; i < methods.length; i++) {
-                method = methods[i];
+            if (methods.length) {
+                for (var i = 0; i < methods.length; i++) {
+                    method = methods[i];
+                    nestedSet(resource, method.name.toLowerCase() + '.x-apigateway.id', method.name);
+                }
+            } else {
+                for (var key in resource) {
+                    method = resource[key];
 
-                nestedSet(resource, method.name.toLowerCase() + '.x-apigateway.id', method.name);
+                    if (method['x-apigateway']) {
+                        delete method['x-apigateway'].id;
+                    }
+                }
             }
 
             done(null, resource);

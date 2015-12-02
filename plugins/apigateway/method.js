@@ -97,7 +97,8 @@ module.exports = {
                 '/methods/' + method.method.toUpperCase(),
             method: 'PUT',
             body: {
-                authorizationType: 'NONE'
+                authorizationType: 'NONE',
+                apiKeyRequired: false
             }
         }, function(err, awsMethod) {
             if (err) {
@@ -113,43 +114,72 @@ module.exports = {
         });
     },
 
-    updateMethod: function updateMethod(method, done) {
-        var _ = this,
-            patchOperations = [],
-            updates = [
-                'authorizationType',
-                'apiKeyRequired'
-            ];
+    // updateMethod: function updateMethod(method, done) {
+    //     var _ = this,
+    //         stringUpdates = [
+    //             'authorizationType',
+    //             'apiKeyRequired'
+    //         ],
+    //         objectUpdates = [
+    //             // 'requestParameters',
+    //             // 'requestModels'
+    //         ],
+    //         patchOperations = [],
+    //         obj, i, objName;
 
-        _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
+    //     _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
 
-        for (var i = updates.length - 1; i >= 0; i--) {
-            patchOperations.push({
-                op: 'replace',
-                path: '/' + updates[i],
-                value: method['x-apigateway'][updates[i]] + ''
-            });
-        }
+    //     for (i = stringUpdates.length - 1; i >= 0; i--) {
+    //         patchOperations.push({
+    //             op: 'replace',
+    //             path: '/' + stringUpdates[i],
+    //             value: method['x-apigateway'][stringUpdates[i]] + ''
+    //         });
+    //     }
 
-        _.AWSRequest({
-            path: '/restapis/' + method.restapi['x-apigateway'].id +
-                '/resources/' + method.resource['x-apigateway'].id +
-                '/methods/' + method.method.toUpperCase(),
-            method: 'PATCH',
-            body: {
-                patchOperations: patchOperations
-            }
-        }, function(err, awsMethod) {
-            if (err) {
-                _.APIDeploy.logger.warn(err);
-                return done(err);
-            }
+    //     // for (i = objectUpdates.length - 1; i >= 0; i--) {
+    //     //     objName = objectUpdates[i];
+    //     //     obj = method['x-apigateway'][objName] || {};
 
-            _.APIDeploy.logger.succeed('Updated Method:', method.pathInfo);
+    //     //     for (var key in obj) {
+    //     //         patchOperations.push({
+    //     //             op: 'add',
+    //     //             path: '/' + objName + '/' + key,
+    //     //             value: obj[key] + ''
+    //     //         });
+    //     //     }
+    //     // }
 
-            done(null, method);
-        });
-    },
+    //     // for (i = objectUpdates.length - 1; i >= 0; i--) {
+    //     //     objName = objectUpdates[i];
+    //     //     obj = method['x-apigateway'][objName] || {};
+
+    //     //     patchOperations.push({
+    //     //         op: 'replace',
+    //     //         path: '/' + objName,
+    //     //         value: obj
+    //     //     });
+    //     // }
+
+    //     _.AWSRequest({
+    //         path: '/restapis/' + method.restapi['x-apigateway'].id +
+    //             '/resources/' + method.resource['x-apigateway'].id +
+    //             '/methods/' + method.method.toUpperCase(),
+    //         method: 'PATCH',
+    //         body: {
+    //             patchOperations: patchOperations
+    //         }
+    //     }, function(err, awsMethod) {
+    //         if (err) {
+    //             _.APIDeploy.logger.warn(err);
+    //             return done(err);
+    //         }
+
+    //         _.APIDeploy.logger.succeed('Updated Method:', method.pathInfo);
+
+    //         done(null, method);
+    //     });
+    // },
 
     deployMethodDetails: function deployMethodDetails(method, done) {
         var _ = this;
@@ -157,9 +187,9 @@ module.exports = {
         _.APIDeploy.logger.log('Deploying Method Details:', method.pathInfo);
 
         async.parallel([
-            function updateMethod(next) {
-                _.updateMethod(method, next);
-            },
+            // function updateMethod(next) {
+            //     _.updateMethod(method, next);
+            // },
 
             function deployMethodRequest(next) {
                 _.deployMethodRequest(method, next);

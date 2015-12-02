@@ -1,6 +1,12 @@
 module.exports = {
     deployMethodRequest: function deployMethodRequest(method, done) {
-        var _ = this;
+        var _ = this,
+            patchOperations = [],
+            updates = [
+                'httpMethod',
+                'requestParameters',
+                'requestModels'
+            ];
 
         _.APIDeploy.logger.log('Deploying Method Request:', method.pathInfo);
         _.APIDeploy.logger.succeed('Deployed Method Request:', method.pathInfo);

@@ -9,8 +9,8 @@ var apigateway = module.exports = Plugin.create({
         apigateway: {
             cors: true,
             type: 'AWS',
-            authorizationType: 'NONE',
-            apiKeyRequired: false,
+            // authorizationType: 'NONE',
+            // apiKeyRequired: false,
             httpMethod: 'POST',
             cacheNamespace: null,
             cacheKeyParameters: [],
@@ -60,7 +60,12 @@ var apigateway = module.exports = Plugin.create({
                         httpMethod: 'POST',
                         cacheNamespace: null,
                         cacheKeyParameters: [],
-                        credentials: null
+                        credentials: null,
+                        requestTemplates: {
+                            'application/json': JSON.stringify({
+                                statusCode: 200
+                            })
+                        }
                     }
                 }
             };

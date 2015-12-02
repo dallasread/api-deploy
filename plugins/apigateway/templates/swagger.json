@@ -1,7 +1,7 @@
 {
     "type": "{{apigateway.type}}",
-    "authorizationType": "{{apigateway.authorizationType}}",
-    "apiKeyRequired": {{apigateway.apiKeyRequired}},
+    "authorizationType": "NONE",
+    "apiKeyRequired": false,
     "httpMethod": "{{apigateway.httpMethod}}",
     "cacheNamespace": {{#if apigateway.cacheNamespace}}{{apigateway.cacheNamespace}}{{else}}null{{/if}},
     "cacheKeyParameters": {{#if apigateway.cacheKeyParameters}}{{apigateway.cacheKeyParameters}}{{else}}[]{{/if}},
