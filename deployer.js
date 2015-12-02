@@ -26,6 +26,12 @@ APIDeploy.definePrototype({
         if (!plugin.name) throw new Error('Please supply a plugin name.');
         if (_.plugins[plugin.name]) console.warn('Plugin already exists. Overwriting: ' + plugin.name);
 
+        for (var i = 0; i < (plugin.requires || []).length; i++) {
+            if (!_.plugins[plugin.requires[i]]) {
+                throw new Error('`' + plugin.name + '` is missing required plugin: `' + plugin.requires[i] + '`. Maybe change the order in which they are registered?');
+            }
+        }
+
         plugin.APIDeploy = _;
 
         plugin.defineProperties({
@@ -37,6 +43,8 @@ APIDeploy.definePrototype({
         });
 
         _.plugins[plugin.name] = plugin;
+
+        return plugin;
     },
     deployAPI: function deployAPI(pluginName, args, options, done) {
         var _ = this,

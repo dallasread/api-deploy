@@ -4,17 +4,19 @@ var Plugin = require('../../lib/plugin'),
 
 var apigateway = module.exports = Plugin.create({
     name: 'apigateway',
+    requires: ['lambda'],
     defaults: {
         aws: {},
         apigateway: {
             cors: true,
-            type: 'AWS',
-            // authorizationType: 'NONE',
-            // apiKeyRequired: false,
-            httpMethod: 'POST',
-            cacheNamespace: null,
-            cacheKeyParameters: [],
-            credentials: null
+            method: {
+                type: 'AWS',
+                httpMethod: 'POST',
+                authorizationType: 'NONE',
+                apiKeyRequired: false,
+                requestModels: {},
+                requestParameters: {}
+            }
         }
     },
     swagger: {
@@ -50,23 +52,21 @@ var apigateway = module.exports = Plugin.create({
 
         if (!_.apigateway.cors) return;
 
+        var corsObj = JSON.parse(JSON.stringify(_.defaults.apigateway.method));
+
+        corsObj.type = 'MOCK';
+        corsObj.requestTemplates = {
+            'application/json': {
+                statusCode: 200
+            }
+        };
+
+        delete corsObj.httpMethod;
+
         for (i = 0; i < resourceNames.length; i++) {
             _.APIDeploy.swagger.data.paths[resourceNames[i]] = {
                 options: {
-                    'x-apigateway': {
-                        type: 'MOCK',
-                        authorizationType: 'NONE',
-                        apiKeyRequired: false,
-                        httpMethod: 'POST',
-                        cacheNamespace: null,
-                        cacheKeyParameters: [],
-                        credentials: null,
-                        requestTemplates: {
-                            'application/json': JSON.stringify({
-                                statusCode: 200
-                            })
-                        }
-                    }
+                    'x-apigateway': corsObj
                 }
             };
         }

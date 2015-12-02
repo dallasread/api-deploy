@@ -1,9 +1,8 @@
 {
-    "type": "{{apigateway.type}}",
-    "authorizationType": "NONE",
-    "apiKeyRequired": false,
-    "httpMethod": "{{apigateway.httpMethod}}",
-    "cacheNamespace": {{#if apigateway.cacheNamespace}}{{apigateway.cacheNamespace}}{{else}}null{{/if}},
-    "cacheKeyParameters": {{#if apigateway.cacheKeyParameters}}{{apigateway.cacheKeyParameters}}{{else}}[]{{/if}},
-    "credentials": {{#if apigateway.credentials}}{{apigateway.credentials}}{{else}}null{{/if}}
+    "type": "{{apigateway.method.type}}",
+    "httpMethod": "{{apigateway.method.httpMethod}}",
+    "authorizationType": "{{apigateway.method.authorizationType}}",
+    "apiKeyRequired": {{type-boolean apigateway.method.apiKeyRequired}},
+    "requestModels": {{type-object apigateway.method.requestModels}},
+    "requestParameters": {{type-object apigateway.method.requestParameters}}
 }

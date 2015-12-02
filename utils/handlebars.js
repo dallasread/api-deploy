@@ -14,6 +14,14 @@ handlebars.registerHelper('downcase', function(a) {
     return a.toLowerCase();
 });
 
+handlebars.registerHelper('type-boolean', function(a) {
+    return !!a + '';
+});
+
+handlebars.registerHelper('type-object', function(a) {
+    return JSON.stringify(a || {});
+});
+
 handlebars.registerHelper('ensure-exists', function(namespace, a) {
     var path = dotterize(a, 1).split('.'),
         output = '',
