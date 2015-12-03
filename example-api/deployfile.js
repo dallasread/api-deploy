@@ -9,18 +9,21 @@ var deployer = require('../').configure({
     routes: require('./routes.json')
 });
 
-var awsDefaults = {
+var pluginConfig = {
         lambda: {
             role: 'arn:aws:iam::xxxxxxxxxxxx:role/Lambda'
         },
         aws: {
             region: 'us-east-1',
             profile: 'default'
+        },
+        apigateway: {
+            // cors: false
         }
     };
 
-deployer.plugins.lambda.configure(awsDefaults);
-deployer.plugins.local.configure(awsDefaults);
-deployer.plugins.apigateway.configure(awsDefaults);
+require('api-deploy/plugins/local').register(deployer).configure(pluginConfig);
+require('api-deploy/plugins/lambda').register(deployer).configure(pluginConfig);
+require('api-deploy/plugins/apigateway').register(deployer).configure(pluginConfig);
 
 module.exports = deployer;

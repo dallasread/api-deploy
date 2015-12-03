@@ -50,6 +50,8 @@ APIDeploy.definePrototype({
         var _ = this,
             plugin = _.plugins[pluginName];
 
+        options.pluginName = pluginName;
+
         if (plugin) {
             plugin._deployAPI(args, options, function(err, data) {
                 done && done(err, data);
@@ -61,6 +63,8 @@ APIDeploy.definePrototype({
     generateSDK: function generateSDK(pluginName, args, options, done) {
         var _ = this,
             plugin = _.plugins[pluginName];
+
+        options.pluginName = pluginName;
 
         if (plugin) {
             plugin._generateSDK(args, options, done);
