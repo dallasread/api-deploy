@@ -2,8 +2,6 @@
 
 API Deploy is a Command Line Tool to publish your API. Currently, AWS Lambda is implemented, with API Gateway on the way. You can also export an SDK to use on the Web or Node (more platforms to come). Your SDK and Lambdas are both built based your project's `deployfile.js`.
 
-**API Gateway integration is coming soon!**
-
 ## To use API Deploy:
 
 First, you'll need to `npm install api-deploy -g`. This gives you a new terminal command: `api`. Now, create a `deployfile.js` in your project:
