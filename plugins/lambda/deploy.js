@@ -76,7 +76,8 @@ module.exports = {
 
         _.APIDeploy.logger.log('Deploying to Lambda...');
 
-        var deployable = Finder.getAllResourcesToDeploy(_.swagger.data, args.length ? args : ['/']),
+        var swaggerData = _.APIDeploy.swagger.data,
+            deployable = Finder.getAllResourcesToDeploy(swaggerData, args.length ? args : ['/']),
             methods = deployable.methods.filter(function(item) {
                 if (item['x-lambda']) return item;
             });

@@ -7,17 +7,18 @@ module.exports = {
 
         _.APIDeploy.logger.log('Deploying to API Gateway...');
 
-        var deployable = Finder.getAllResourcesToDeploy(_.swagger.data, args.length ? args : ['/']);
+        var swaggerData = _.APIDeploy.swagger.data,
+            deployable = Finder.getAllResourcesToDeploy(swaggerData, args.length ? args : ['/']);
 
         async.series([
             function deployRestAPI(next) {
-                _.deployRestAPI(_.swagger.data, next);
+                _.deployRestAPI(swaggerData, next);
             },
             function deployResources(next) {
                 _.deployResources(deployable.resources, next);
             },
             function deployDeployment(next) {
-                _.deployDeployment(_.swagger.data, options, next);
+                _.deployDeployment(swaggerData, options, next);
             }
         ], function(err, data) {
             if (err) {
