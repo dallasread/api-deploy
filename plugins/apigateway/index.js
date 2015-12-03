@@ -23,10 +23,18 @@ var apigateway = module.exports = Plugin.create({
         template: fs.readFileSync(__dirname + '/templates/swagger.json', { encoding: 'utf8' })
     },
     cli: [
-        // ['r', 'routes[=ARG+]', 'Set the routes you wish to deploy']
+        ['l', 'lambda', 'Deploys associated Lambdas.']
     ],
     deployAPI: function deployAPI(args, options, done) {
-        this.deployAPIGateway(args, options, done);
+        var _ = this;
+
+        if (options.lambda) {
+            _.APIDeploy.plugins.lambda._deployAPI(args, options, function nowAPIGateway() {
+                _.deployAPIGateway(args, options, done);
+            });
+        } else {
+            _.deployAPIGateway(args, options, done);
+        }
     },
     afterConfigure: function afterConfigure() {
         var _ = this;

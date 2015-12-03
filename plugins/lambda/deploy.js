@@ -8,7 +8,7 @@ var fs = require('fs'),
     pluralize = require('pluralize'),
     gulpUtil = require('gulp-util'),
     Finder = require('../../utils/finder'),
-    Utils = require('../../utils');
+    nestedSet = require('../../utils/nested-set.js');
 
 function lambdaPath(path) {
     return path
@@ -17,11 +17,60 @@ function lambdaPath(path) {
         '.handler';
 }
 
+function applyLambdasToSwagger(swagger, lambdas) {
+        var lambda, path, method, i, m;
+
+        for (i = lambdas.length - 1; i >= 0; i--) {
+            lambda = lambdas[i];
+
+            for (path in swagger.paths) {
+                for (method in swagger.paths[path]) {
+                    m = swagger.paths[path][method];
+
+                    if (m.operationId === lambda.FunctionName && !isDeployed(m)) {
+                        nestedSet(m, 'x-lambda.arn', lambda.FunctionArn);
+                    }
+                }
+            }
+        }
+    }
+
 function isDeployed(method) {
-    return method['x-lambda'] && method['x-lambda'].arn && method['x-lambda'].arn.length;
+    return method['x-lambda'] && method['x-lambda'].arn && !!method['x-lambda'].arn.length;
 }
 
 module.exports = {
+    deployLambdaPlugin: function deployLambdaPlugin(args, options, done) {
+        var _ = this;
+
+        async.series([
+            function getLambdas(next) {
+                _.AWSLambda.listFunctions({
+                    MaxItems: 500
+                }, function(err, lambdas) {
+                    if (err) return next(err);
+
+                    applyLambdasToSwagger(_.APIDeploy.swagger.data, lambdas.Functions);
+
+                    next();
+                });
+            },
+            function deployLambdas(next) {
+                _.deployLambdas(args, options, next);
+            }
+        ], function(err) {
+            done();
+        });
+    },
+
+    getLambdas: function getLambdas(done) {
+        var _ = this;
+
+        _.AWSLambda.listFunctions({
+            MaxItems: 500
+        }, done);
+    },
+
     deployLambdas: function deployLambdas(args, options, done) {
         var _ = this;
 

@@ -28,7 +28,7 @@ module.exports = {
 
         _.APIDeploy.logger.log('Deploying ' + Object.keys(methods).length + ' Methods' + (path ? ':' : '...'), path);
 
-        _.APIDeploy.each(methods, function(method, next) {
+        async.eachSeries(methods, function(method, next) {
             _.deployMethod(method, next);
         }, function(err) {
             var deployedCount = methods.filter(function(method) { return method.deployed; }).length;
@@ -64,10 +64,6 @@ module.exports = {
                     return next(null, method);
                 }
 
-                method.setHidden('deployed', true);
-
-                _.APIDeploy.logger.succeed('Deployed Method:', method.pathInfo);
-
                 next(null, method);
             });
         });
@@ -75,6 +71,9 @@ module.exports = {
         async.series(funcs, function(err, data) {
             if (err) {
                 _.APIDeploy.logger.warn(err);
+            } else {
+                method.setHidden('deployed', true);
+                _.APIDeploy.logger.succeed('Deployed Method:', method.pathInfo);
             }
 
             done(null, method);
@@ -85,11 +84,6 @@ module.exports = {
         var _ = this;
 
         _.APIDeploy.logger.log('Creating Method:', method.pathInfo);
-
-        if (!method['x-apigateway']) {
-            _.APIDeploy.logger.warn('No API Gateway configuration:', method.pathInfo);
-            return done(null, method);
-        }
 
         _.AWSRequest({
             path: '/restapis/' + method.restapi['x-apigateway'].id +
@@ -107,7 +101,7 @@ module.exports = {
 
             _.APIDeploy.logger.succeed('Created Method:', method.pathInfo);
 
-            nestedSet(method, method.method.toLowerCase() + '.x-apigateway.id', awsMethod.id);
+            nestedSet(method, 'x-apigateway.id', awsMethod.id);
 
             done(null, method);
         });
@@ -128,6 +122,8 @@ module.exports = {
                 _.APIDeploy.logger.warn(err);
                 return done(err);
             }
+
+            method.setHidden('oldData', awsMethod);
 
             _.APIDeploy.logger.succeed('Found Method:', method.pathInfo);
 

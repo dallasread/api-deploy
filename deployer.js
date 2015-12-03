@@ -52,7 +52,6 @@ APIDeploy.definePrototype({
 
         if (plugin) {
             plugin._deployAPI(args, options, function(err, data) {
-                _.saveSwagger();
                 done && done(err, data);
             });
         } else {

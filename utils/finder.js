@@ -57,6 +57,8 @@ function getAllResourcesToDeploy(swagger, paths) {
 
     var resourcePaths = getAllChildrenResources(swagger, paths);
 
+    resourcePaths = generateResourcesAll(swagger, paths, resourcePaths);
+
     for (var i = 0; i < resourcePaths.length; i++) {
         resource = swagger.paths[resourcePaths[i]];
 
@@ -64,8 +66,6 @@ function getAllResourcesToDeploy(swagger, paths) {
             deploy.methods.push(resource[key]);
         }
     }
-
-    resourcePaths = generateResourcesAll(swagger, paths, resourcePaths);
 
     for (i = 0; i < resourcePaths.length; i++) {
         deploy.resources.push(swagger.paths[resourcePaths[i]]);

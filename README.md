@@ -80,7 +80,4 @@ MyAPI.accountsCreate({
 [https://github.com/dallasread/api-deploy/tree/master/example-api](https://github.com/dallasread/api-deploy/tree/master/example-api)
 
 # TODO
-- reassign handler file in swagger
-- Find existing lambdas and assign them to Swagger doc (in case of deleting the swagger file).
-- Delete existing lambdas (with namespace prefix)
-- API Gateway integration
+- Undeploy

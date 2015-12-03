@@ -42,7 +42,6 @@ module.exports = {
             path: '/restapis/' + restapi['x-apigateway'].id,
             method: 'GET'
         }, function(err, restAPI) {
-            // console.log(restAPI);
             if (err) {
                 _.APIDeploy.logger.warn(err);
                 _.APIDeploy.logger.warn('Attempting to create Rest API...');
@@ -76,7 +75,6 @@ module.exports = {
             nestedSet(restapi, 'x-apigateway.id', restAPI.id);
 
             _.APIDeploy.logger.succeed('Created Rest API.');
-            _.APIDeploy.saveSwagger();
 
             done(null, restapi);
         });

@@ -29,7 +29,7 @@ var Lambda = module.exports = Plugin.create({
         // ['r', 'routes[=ARG+]', 'Set the routes you wish to deploy']
     ],
     deployAPI: function deployAPI(args, options, done) {
-        this.deployLambdas(args, options, done);
+        this.deployLambdaPlugin(args, options, done);
     },
     afterConfigure: function afterConfigure() {
         var _ = this;

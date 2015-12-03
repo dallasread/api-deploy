@@ -1,5 +1,5 @@
 var gutil = require('gulp-util'),
-    FIRST_ARG_LENGTH = 44;
+    FIRST_ARG_LENGTH = 51;
 
 function prepArgs(colour, args) {
     var arr = [],

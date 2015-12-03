@@ -1,57 +1,5 @@
-var async = require('async');
-
-function findPatchOperations(method, oldData) {
-    var patchOperations = [],
-        stringUpdates = [
-            'authorizationType',
-            'apiKeyRequired'
-        ],
-        objectUpdates = [
-            'requestParameters',
-            'requestModels'
-        ],
-        obj, i, objName, oldObj, key;
-
-    for (i = stringUpdates.length - 1; i >= 0; i--) {
-        patchOperations.push({
-            op: 'replace',
-            path: '/' + stringUpdates[i],
-            value: method['x-apigateway'][stringUpdates[i]] + ''
-        });
-    }
-
-    for (i = objectUpdates.length - 1; i >= 0; i--) {
-        objName = objectUpdates[i];
-        obj = method['x-apigateway'][objName] || {};
-        oldObj = oldData[objName] || {};
-
-        for (key in obj) {
-            patchOperations.push({
-                op: 'add',
-                path: '/' + objName + '/' + key
-                    .replace(/~/, '~0')
-                    .replace(/\//, '~1'),
-                value: obj[key]
-            });
-        }
-
-        for (key in oldObj) {
-            if (!obj[key]) {
-                patchOperations.push({
-                    op: 'remove',
-                    path: '/' + objName + '/' + key
-                        .replace(/~/, '~0')
-                        .replace(/\//, '~1')
-                });
-
-                // TODO: Should we really delete stuff on AWS? If no, do this:
-                // obj[key] = oldObj[key];
-            }
-        }
-    }
-
-    return patchOperations;
-}
+var async = require('async'),
+    findPatchOperations = require('../../utils/find-patch-operations.js');
 
 module.exports = {
     deployMethodRequest: function deployMethodRequest(method, done) {
@@ -62,9 +10,22 @@ module.exports = {
 
         async.series([
             function getMethod(next) {
-                _.getMethod(method, function(err, awsMethod) {
+                _.getMethod(method, function(err) {
                     if (err) return next(err);
-                    patchOperations = findPatchOperations(method, awsMethod);
+
+                    patchOperations = findPatchOperations(
+                        method['x-apigateway'],
+                        method.oldData,
+                        [
+                            'authorizationType',
+                            'apiKeyRequired'
+                        ],
+                        [
+                            'requestParameters',
+                            'requestModels'
+                        ]
+                    );
+
                     next();
                 });
             },
