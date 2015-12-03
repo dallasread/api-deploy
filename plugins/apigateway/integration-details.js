@@ -54,7 +54,7 @@ module.exports = {
 
     createIntegrationRequest: function createIntegrationRequest(method, done) {
         var _ = this,
-            attrs = method['x-apigateway'],
+            attrs = method['x-apigateway'] || {},
             body = {};
 
         _.APIDeploy.logger.log('Deploying Integration Request:', method.pathInfo);
@@ -70,11 +70,16 @@ module.exports = {
                 return done(new Error('Try running this command with `--lambda` to update associated Lambdas.'));
             }
 
-            body.uri = 'arn:aws:apigateway:' +
-                _.aws.region +
-                ':lambda:path/2015-03-31/functions/' +
-                method['x-lambda'].arn +
-                '/invocations';
+            if (!attrs.uri) {
+                body.uri = 'arn:aws:apigateway:' +
+                    _.aws.region +
+                    ':lambda:path/2015-03-31/functions/' +
+                    method['x-lambda'].arn +
+                    '/invocations';
+
+                nestedSet(method, 'x-apigateway.uri', body.uri);
+            }
+
         }
 
         _.AWSRequest({
@@ -87,12 +92,10 @@ module.exports = {
         }, function(err, awsIntegration) {
             if (err) {
                 _.APIDeploy.logger.warn(err);
-                return done(err);
+            } else {
+                _.APIDeploy.logger.succeed('Deployed Integration Request:', method.pathInfo);
+                nestedSet(method, 'x-apigateway.cacheNamespace', awsIntegration.cacheNamespace);
             }
-
-            _.APIDeploy.logger.succeed('Deployed Integration Request:', method.pathInfo);
-
-            nestedSet(method, 'x-apigateway.cacheNamespace', awsIntegration.cacheNamespace);
 
             done(null, method);
         });
