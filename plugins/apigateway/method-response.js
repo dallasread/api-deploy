@@ -20,29 +20,12 @@ function isDeployed(method, status) {
 
 module.exports = {
     deployMethodResponses: function deployMethodResponses(method, done) {
-        var _ = this,
-            patchOperations = [];
+        var _ = this;
 
         _.APIDeploy.logger.log('Deploying Method Responses:', method.pathInfo);
 
         async.forEachOfSeries(method.responses, function deployEachMethodResponse(response, status, next) {
-            var exists = isDeployed(method, status);
-
-            if (exists) {
-                patchOperations = findPatchOperations(
-                    exists,
-                    response['x-apigateway'],
-                    [],
-                    [
-                        'responseParameters^=method.response',
-                        'responseModels'
-                    ]
-                );
-
-                _.updateMethodResponse(method, status, patchOperations, next);
-            } else {
-                _.createMethodResponse(method, status, next);
-            }
+            _.deployMethodResponse(method, status, done);
         }, function(err, data) {
             _.APIDeploy.logger.succeed('Deployed Method Responses:', method.pathInfo);
 
@@ -50,9 +33,47 @@ module.exports = {
         });
     },
 
-    createMethodResponse: function createMethodResponse(method, status, done) {
+    deployMethodResponse: function deployMethodResponse(method, status, done) {
         var _ = this,
-            response = method.responses[status]['x-apigateway'];
+            funcs = [],
+            patchOperations = [],
+            exists = isDeployed(method, status);
+
+        _.APIDeploy.logger.log('Deploying Method Response:', method.pathInfo + ' (' + status + ')');
+
+        if (!exists) {
+            funcs.push(function createMethodResponse(next) {
+                _.createMethodResponse(method, status, next);
+            });
+        }
+
+        funcs.push(function updateMethodResponse(next) {
+            patchOperations = findPatchOperations(
+                method.responses[status]['x-apigateway'],
+                exists,
+                [],
+                [
+                    '!responseParameters',
+                    'responseModels'
+                ]
+            );
+
+            _.updateMethodResponse(method, status, patchOperations, next);
+        });
+
+        async.series(funcs, function(err) {
+            if (err) {
+                _.APIDeploy.logger.warn(err);
+            } else {
+                _.APIDeploy.logger.log('Deployed Method Response:', method.pathInfo + ' (' + status + ')');
+            }
+
+            done(null, method);
+        });
+    },
+
+    createMethodResponse: function createMethodResponse(method, status, done) {
+        var _ = this;
 
         _.APIDeploy.logger.log('Creating Method Response:', method.pathInfo + ' (' + status + ')');
 
@@ -63,8 +84,8 @@ module.exports = {
                 '/responses/' + status,
             method: 'PUT',
             body: {
-                responseParameters: response.responseParameters,
-                responseModels: response.responseModels
+                responseParameters: {},
+                responseModels: {}
             }
         }, function(err, methodResponses) {
             if (err) {

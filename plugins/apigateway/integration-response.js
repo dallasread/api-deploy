@@ -53,7 +53,7 @@ module.exports = {
                     exists,
                     [],
                     [
-                        'responseParameters^=integration.response',
+                        'responseParameters',
                         'responseTemplates',
                         'selectionPattern'
                     ]

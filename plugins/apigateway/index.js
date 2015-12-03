@@ -92,8 +92,18 @@ var apigateway = module.exports = Plugin.create({
     },
 
     afterSwagger: function afterSwagger(swaggerData) {
-        var swaggerDataPaths = swaggerData.paths,
+        var _ = this,
+            swaggerDataPaths = swaggerData.paths,
+            responseParameters = {},
             key, method;
+
+        if (_.apigateway.cors) {
+            responseParameters = {
+                'method.response.header.Access-Control-Allow-Headers': '\'Content-Type,X-Amz-Date,Authorization\'',
+                'method.response.header.Access-Control-Allow-Methods': '\'POST,GET,OPTIONS,PUT,PATCH,DELETE\'',
+                'method.response.header.Access-Control-Allow-Origin': '\'*\''
+            };
+        }
 
         for (key in swaggerDataPaths) {
             for (method in swaggerDataPaths[key]) {
@@ -102,7 +112,7 @@ var apigateway = module.exports = Plugin.create({
                         responses: {
                             200: {
                                 'x-apigateway': {
-                                    responseParameters: {},
+                                    responseParameters: responseParameters,
                                     responseModels: {
                                         'application/json': 'Empty'
                                     },

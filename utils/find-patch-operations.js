@@ -1,28 +1,28 @@
 function prepKey(key) {
     return key
-        .replace(/~/, '~0')
-        .replace(/\//, '~1');
+        .replace(/~/g, '~0')
+        .replace(/\//g, '~1');
 }
 
 function unprepKey(key) {
     return key
-        .replace(/~0/, '~')
-        .replace(/~1/, '/');
+        .replace(/~0/g, '~')
+        .replace(/~1/g, '/');
 }
 
 function generatePath(prefix, key) {
-    var beginsWith = prefix.split('~=');
+    var beginsWith = prefix.split('^=');
 
     if (beginsWith.length > 1 && key.indexOf(beginsWith[1]) !== 0) {
         return false;
     }
 
-    return '/' + prefix + '/' + prepKey(key);
+    return '/' + prefix.replace(/\^=.+$/, '') + '/' + prepKey(key);
 }
 
 module.exports = function findPatchOperations(newData, oldData, stringUpdates, objectUpdates, arrayUpdates) {
     var patchOperations = [],
-        obj, i, objName, oldObj, key, path, val, prefix, oldItem;
+        obj, i, objName, oldObj, key, path, val, prefix, oldItem, booleanify, rawPrefix;
 
     arrayUpdates = arrayUpdates || [];
     stringUpdates = stringUpdates || [];
@@ -53,17 +53,19 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
     }
 
     for (i = objectUpdates.length - 1; i >= 0; i--) {
-        prefix = objectUpdates[i];
-        objName = prefix.replace(/\~.+$/g, '');
+        booleanify = objectUpdates[i][0] === '!';
+        rawPrefix = objectUpdates[i].replace(/^!/, '');
+        objName = rawPrefix.replace(/\^=.+$/, '').replace(/\~.+$/g, '');
         obj = newData[objName] || {};
         oldObj = oldData[objName] || {};
 
+        items:
         for (key in obj) {
-            path = generatePath(prefix, key);
+            path = generatePath(rawPrefix, key);
             oldItem = oldObj[unprepKey(key)];
-            val = typeof obj[key] === 'object' ? JSON.stringify(obj[key], null, 4) : obj[key] + '';
+            val = booleanify ? !!obj[key] + '' : obj[key] + '';
 
-            if (!path) break;
+            if (!path) continue items;
 
             if (oldItem) {
                 if (oldItem !== obj[key]) {
@@ -83,8 +85,8 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
         }
 
         for (key in oldObj) {
-            if (!obj[key]) {
-                path = generatePath(prefix, key);
+            if (!obj[prepKey(key)]) {
+                path = generatePath(rawPrefix, key);
 
                 if (!path) break;
 
