@@ -80,4 +80,7 @@ MyAPI.accountsCreate({
 [https://github.com/dallasread/api-deploy/tree/master/example-api](https://github.com/dallasread/api-deploy/tree/master/example-api)
 
 # TODO
+- CORS
+- Permissions
+- Integration Response
 - Undeploy

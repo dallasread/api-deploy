@@ -1,9 +1,11 @@
 var async = require('async'),
-    findPatchOperations = require('../../utils/find-patch-operations.js'),
-    anyDifferent = require('../../utils/any-different.js');
+    findPatchOperations = require('../../utils/find-patch-operations.js');
 
 function isDeployed(method, status) {
-    var responses = method.oldData._embedded['method:responses'];
+    var responses = method.oldData &&
+        method.oldData._embedded &&
+        method.oldData._embedded['method:responses'];
+
     if (!responses) return false;
     if (!(responses instanceof Array)) responses = [responses];
 
@@ -32,7 +34,7 @@ module.exports = {
                     response['x-apigateway'],
                     [],
                     [
-                        'responseParameters',
+                        'responseParameters^=method.response',
                         'responseModels'
                     ]
                 );

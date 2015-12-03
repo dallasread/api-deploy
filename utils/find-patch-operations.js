@@ -1,4 +1,10 @@
 function generatePath(prefix, key) {
+    var beginsWith = prefix.split('~=');
+
+    if (beginsWith.length > 1 && key.indexOf(beginsWith[1]) !== 0) {
+        return false;
+    }
+
     return '/' + prefix + '/' + key
         .replace(/~/, '~0')
         .replace(/\//, '~1');
@@ -6,7 +12,7 @@ function generatePath(prefix, key) {
 
 module.exports = function findPatchOperations(newData, oldData, stringUpdates, objectUpdates, arrayUpdates) {
     var patchOperations = [],
-        obj, i, objName, oldObj, key, path, val;
+        obj, i, objName, oldObj, key, path, val, prefix;
 
     arrayUpdates = arrayUpdates || [];
     stringUpdates = stringUpdates || [];
@@ -37,13 +43,16 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
     }
 
     for (i = objectUpdates.length - 1; i >= 0; i--) {
-        objName = objectUpdates[i];
+        prefix = objectUpdates[i];
+        objName = prefix.replace(/\~.+$/g, '');
         obj = newData[objName] || {};
         oldObj = oldData[objName] || {};
 
         for (key in obj) {
-            path = generatePath(objName, key);
+            path = generatePath(prefix, key);
             val = typeof obj[key] === 'object' ? JSON.stringify(obj[key], null, 4) : obj[key];
+
+            if (!path) break;
 
             if (oldObj[key]) {
                 if (oldObj[key] !== obj[key]) {
@@ -64,9 +73,13 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
 
         for (key in oldObj) {
             if (!obj[key]) {
+                path = generatePath(prefix, key);
+
+                if (!path) break;
+
                 patchOperations.push({
                     op: 'remove',
-                    path: generatePath(objName, key)
+                    path: path
                 });
 
                 // TODO: Should we really delete stuff on AWS? If no, do this:

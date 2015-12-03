@@ -84,6 +84,7 @@ var apigateway = module.exports = Plugin.create({
 
     afterSwagger: function afterSwagger(swaggerData) {
         var swaggerDataPaths = swaggerData.paths,
+            responseTemplate = fs.readFileSync(__dirname + '/templates/response.json', { encoding: 'utf8' }),
             key, method;
 
         for (key in swaggerDataPaths) {
@@ -96,6 +97,9 @@ var apigateway = module.exports = Plugin.create({
                                     responseParameters: {},
                                     responseModels: {
                                         'application/json': 'Empty'
+                                    },
+                                    responseTemplates: {
+                                        'application/json': responseTemplate
                                     }
                                 }
                             }
