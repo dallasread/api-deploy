@@ -37,14 +37,13 @@ server.connection({
 });
 
 {{#each methods}}
-    {{#if data.x-api-deploy}}
-        {{#if data.x-api-deploy.sdk.method}}
+{{#if x-lambda.handler}}
 (function () {
-    var endpoint = require('{{data.x-amazon-lambda.handler}}');
+    var endpoint = require('{{x-lambda.handler}}');
 
     server.route({
-        method: '{{_method}}',
-        path: '{{_path}}',
+        method: '{{method}}',
+        path: '{{path}}',
         handler: function (request, reply) {
             var context = {
                     done: function(err, data) {
@@ -69,10 +68,9 @@ server.connection({
         }
     });
 }());
-        {{/if}}
-    {{/if}}
-{{/each}}
 
+{{/if}}
+{{/each}}
 server.start(function (err) {
     if (err) throw err;
     console.log('Server running at:', server.info.uri);

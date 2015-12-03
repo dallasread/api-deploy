@@ -1,42 +1,51 @@
+var API_FILL_REGEX = /[{]([^}]*)[}]/g;
+
+function API_FILL_URL(url, data) {
+    return url.replace(API_FILL_REGEX, function (match, p1, offset, string) {
+        return (data && data.params && data.params[p1]) || '';
+    }) + (data.query ? ('?' + $.param(data.query)) : '');
+}
+
 var API = {
     debug: false,
-    init: function() {},
-
-{{#each methods}}
-    {{#if data.x-api-deploy}}
-        {{#if data.x-api-deploy.sdk.method}}
-    {{data.x-api-deploy.sdk.method}}: function {{data.x-api-deploy.sdk.method}}(data, done) {
-        if (!done && this.debug) {
-            console.warn('No callback supplied.');
-        }
-
-        $.ajax({
-            method: '{{_method}}',
-            url: '{{../sdk.url}}{{_path}}',
-            data: '{{_method}}' === 'GET' ? data.query : JSON.stringify(data.payload),
-            contentType: 'application/json; charset=utf-8',
-            beforeSend: function (xhr) {
-                for (var key in data.headers) {
-                    xhr.setRequestHeader(key, data.headers[key]);
-                }
-            },
-            complete: function(response) {
-                if (response.responseJSON) {
-                    if (response.responseJSON.errorMessage) {
-                        typeof done === 'function' && done(response.responseJSON, null);
-                    } else {
-                        typeof done === 'function' && done(null, response.responseJSON);
-                    }
-                } else {
-                    typeof done === 'function' && done(new Error('Could not complete network request.'));
-                }
-            }
-        });
-    },
-        {{/if}}
-    {{/if}}
-{{/each}}
+    init: function() {}
 };
 
-if (window) window.{{sdk.name}} = API;
+{{#each methods}}
+{{#if operationId}}
+{{{ensure-exists 'API' operationId}}}
+API.{{dotterize operationId 1}} = function (data, done) {
+    data = data || {};
+
+    if (!done && this.debug) {
+        console.warn('No callback supplied.');
+    }
+
+    $.ajax({
+        method: '{{upcase method}}',
+        url: API_FILL_URL('{{../sdk.url}}{{path}}', data),
+        data: '{{upcase method}}' === 'GET' ? undefined : JSON.stringify(data.payload),
+        contentType: 'application/json; charset=utf-8',
+        beforeSend: function (xhr) {
+            for (var key in data.headers) {
+                xhr.setRequestHeader(key, data.headers[key]);
+            }
+        },
+        complete: function(response) {
+            if (response.responseJSON) {
+                if (response.responseJSON.errorMessage) {
+                    typeof done === 'function' && done(response.responseJSON, null);
+                } else {
+                    typeof done === 'function' && done(null, response.responseJSON);
+                }
+            } else {
+                typeof done === 'function' && done(new Error('Could not complete network request.'));
+            }
+        }
+    });
+};
+{{/if}}
+{{/each}}
+
+if (typeof window !== 'undefined') window.{{sdk.name}} = API;
 module.exports = API;

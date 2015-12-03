@@ -1,5 +1,6 @@
 module.exports = {
-    prepPath: require('./prep-path'),
+    dashedCamelCase: require('./dashed-camel-case'),
     logger: require('./logger'),
-    handlebars: require('./handlebars')
+    handlebars: require('./handlebars'),
+    wrapSwagger: require('./wrap-swagger')
 };

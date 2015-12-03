@@ -42,7 +42,7 @@ module.exports = {
             accountNumber = _.lambda.role.replace(/[^\d]+/g, ''),
             StatementId = 'api-deploy-access';
 
-        _.APIDeploy.logger.log('Creating Access Policy         - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Creating Access Policy:', method._path + ' (' + method._method + ')');
 
         lambda.removePermission({
             FunctionName: method.data.operationId,
@@ -63,9 +63,9 @@ module.exports = {
             }, function(err, data) {
                 if (err) return done(err);
 
-                _.APIDeploy.logger.log('Created Access Policy          - ' + method._path + ' (' + method._method + ')');
+                _.APIDeploy.logger.log('Created Access Policy:', method._path + ' (' + method._method + ')');
 
-                done(err, data);
+                done(null, data);
             });
         });
     },
@@ -73,8 +73,8 @@ module.exports = {
     updateRestAPIAccessPolicy: function updateRestAPIAccessPolicy(method, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Updating Access Policy         - ' + method._path + ' (' + method._method + ')');
-        _.APIDeploy.logger.log('Updated Access Policy          - ' + method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updating Access Policy:', method._path + ' (' + method._method + ')');
+        _.APIDeploy.logger.log('Updated Access Policy:', method._path + ' (' + method._method + ')');
 
         done();
     }

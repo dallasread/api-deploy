@@ -1,6 +1,7 @@
 var Generator = require('generate-js'),
     merge = require('deepmerge'),
-    Utils = require('./utils');
+    Utils = require('./utils'),
+    async = require('async');
 
 var APIDeploy = Generator.generate(function APIDeploy() {
     var _ = this;
@@ -8,6 +9,12 @@ var APIDeploy = Generator.generate(function APIDeploy() {
     _.defineProperties({
         plugins: {},
         logger: Utils.logger
+    });
+
+    _.defineProperties({
+        writable: true
+    }, {
+        each: async.each
     });
 });
 
@@ -18,6 +25,12 @@ APIDeploy.definePrototype({
 
         if (!plugin.name) throw new Error('Please supply a plugin name.');
         if (_.plugins[plugin.name]) console.warn('Plugin already exists. Overwriting: ' + plugin.name);
+
+        for (var i = 0; i < (plugin.requires || []).length; i++) {
+            if (!_.plugins[plugin.requires[i]]) {
+                throw new Error('`' + plugin.name + '` is missing required plugin: `' + plugin.requires[i] + '`. Maybe change the order in which they are registered?');
+            }
+        }
 
         plugin.APIDeploy = _;
 
@@ -30,14 +43,17 @@ APIDeploy.definePrototype({
         });
 
         _.plugins[plugin.name] = plugin;
+
+        return plugin;
     },
     deployAPI: function deployAPI(pluginName, args, options, done) {
         var _ = this,
             plugin = _.plugins[pluginName];
 
+        options.pluginName = pluginName;
+
         if (plugin) {
             plugin._deployAPI(args, options, function(err, data) {
-                _.saveSwagger();
                 done && done(err, data);
             });
         } else {
@@ -47,6 +63,8 @@ APIDeploy.definePrototype({
     generateSDK: function generateSDK(pluginName, args, options, done) {
         var _ = this,
             plugin = _.plugins[pluginName];
+
+        options.pluginName = pluginName;
 
         if (plugin) {
             plugin._generateSDK(args, options, done);
@@ -74,9 +92,9 @@ APIDeploy.definePrototype({
         _.swagger = merge({
             path: './swagger.json',
             templates: {
-                resource: JSON.stringify(
-                    require('./lib/swagger/templates/resource.json')
-                )
+                resource: JSON.stringify({
+                    'options': {}
+                })
             }
         }, _.swagger || {});
 
@@ -84,7 +102,6 @@ APIDeploy.definePrototype({
     }
 });
 
-APIDeploy.definePrototype(require('./utils/find'));
 APIDeploy.definePrototype(require('./lib/swagger/generate'));
 
 module.exports = APIDeploy;

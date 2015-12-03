@@ -28,16 +28,14 @@ module.exports = Plugin.create({
             ),
             path = (options.path && require('path').resolve(options.path)) || _.local.path;
 
-        _.APIDeploy.logger.log('Building Local Server');
-
-        _.APIDeploy.findMethods();
+        _.APIDeploy.logger.log('Deploying Local Server');
 
         fs.writeFileSync(
             path,
             template(_.templateData())
         );
 
-        _.APIDeploy.logger.log('Built Local Server');
+        _.APIDeploy.logger.log('Deployed Local Server');
 
         done();
 

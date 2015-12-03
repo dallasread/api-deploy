@@ -61,7 +61,7 @@ module.exports = {
             path = resource._path,
             parent = resource._parent;
 
-        _.APIDeploy.logger.log('Creating Resource              - ' + path);
+        _.APIDeploy.logger.log('Creating Resource:', path);
 
         _.AWSRequest({
             path: '/restapis/' + _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'].id + '/resources/' + resource._parent,
@@ -82,7 +82,7 @@ module.exports = {
             resource._path = path;
             resource._parent = parent;
 
-            _.APIDeploy.logger.log('Created Resource               - ' + path);
+            _.APIDeploy.logger.log('Created Resource:', path);
 
             done(null, resource);
         });
@@ -91,8 +91,8 @@ module.exports = {
     updateRestAPIResource: function updateRestAPIResource(resource, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Updating Resource              - ' + resource._path);
-        _.APIDeploy.logger.log('Updated Resource               - ' + resource._path);
+        _.APIDeploy.logger.log('Updating Resource:', resource._path);
+        _.APIDeploy.logger.log('Updated Resource:', resource._path);
 
         done(null, resource);
     }

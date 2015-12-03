@@ -1,337 +1,311 @@
 {
     "paths": {
-        "/hello/there": {
+        "/": {
             "options": {
-                "x-amazon-apigateway-integration": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "x-apigateway": {
                     "type": "MOCK",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
                     "requestTemplates": {
-                        "application/json": {
-                            "statusCode": 200
-                        }
+                        "application/json": "{\n    \"statusCode\": 200\n}"
                     },
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": null
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    }
+                    "cacheNamespace": "i6jnnnijmk"
                 }
             },
-            "delete": {
-                "operationId": "MySampleAPI-Hello-There-DELETE",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "helloThere"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "./hello/there",
-                    "memorySize": "",
-                    "role": "",
-                    "timeout": "",
-                    "runtime": "",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE"
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "apiKeyRequired": false,
-                    "httpMethod": "POST",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
-                    "requestTemplates": {},
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": {
-                                    "payload": "$input.params()",
-                                    "path": "$input.params().path",
-                                    "query": "$input.params().querystring",
-                                    "header": "$input.params().header",
-                                    "Authorization": "$input.params(\"Authorization\")"
-                                }
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    },
-                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-DELETE/invocations"
-                }
-            },
-            "patch": {
-                "operationId": "MySampleAPI-Hello-There-PATCH",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "helloThere"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "./hello/there",
-                    "memorySize": "",
-                    "role": "",
-                    "timeout": "",
-                    "runtime": "",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There-PATCH"
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "apiKeyRequired": false,
-                    "httpMethod": "POST",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
-                    "requestTemplates": {},
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": {
-                                    "payload": "$input.params()",
-                                    "path": "$input.params().path",
-                                    "query": "$input.params().querystring",
-                                    "header": "$input.params().header",
-                                    "Authorization": "$input.params(\"Authorization\")"
-                                }
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    }
-                }
-            },
-            "x-amazon-apigateway-resource": {
-                "id": "z05ti8"
-            }
-        },
-        "/hello/world": {
-            "options": {
-                "x-amazon-apigateway-integration": {
-                    "type": "MOCK",
-                    "requestTemplates": {
-                        "application/json": {
-                            "statusCode": 200
-                        }
-                    },
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": null
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "operationId": "MySampleAPI-Hello-World-POST",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "helloWorld"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "./hello/world",
-                    "memorySize": "",
-                    "role": "",
-                    "timeout": "",
-                    "runtime": "",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World-POST"
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "apiKeyRequired": false,
-                    "httpMethod": "POST",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
-                    "requestTemplates": {},
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
-                            "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
-                                "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": {
-                                    "payload": "$input.params()",
-                                    "path": "$input.params().path",
-                                    "query": "$input.params().querystring",
-                                    "header": "$input.params().header",
-                                    "Authorization": "$input.params(\"Authorization\")"
-                                }
-                            },
-                            "responseModels": {
-                                "application/json": "Empty"
-                            }
-                        }
-                    }
-                }
-            },
-            "x-amazon-apigateway-resource": {
-                "id": "tqcgno"
+            "x-apigateway": {
+                "id": "i6jnnnijmk"
             }
         },
         "/hello": {
             "options": {
-                "x-amazon-apigateway-integration": {
-                    "type": "MOCK",
-                    "requestTemplates": {
-                        "application/json": {
-                            "statusCode": 200
-                        }
-                    },
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": null
                             },
                             "responseModels": {
                                 "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
                             }
                         }
                     }
+                },
+                "x-apigateway": {
+                    "type": "MOCK",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"statusCode\": 200\n}"
+                    },
+                    "cacheNamespace": "98zjff"
                 }
             },
             "get": {
-                "operationId": "MySampleAPI-Hello-GET",
-                "x-api-deploy": {
-                    "sdk": {
-                        "method": "hello"
-                    }
-                },
-                "x-amazon-lambda": {
-                    "handler": "./hello/world",
-                    "memorySize": "",
-                    "role": "",
-                    "timeout": "",
-                    "runtime": "",
-                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET"
-                },
-                "x-amazon-apigateway-integration": {
-                    "type": "AWS",
-                    "apiKeyRequired": false,
-                    "httpMethod": "POST",
-                    "cacheNamespace": null,
-                    "cacheKeyParameters": [],
-                    "credentials": null,
-                    "requestTemplates": {},
-                    "requestParameters": {
-                        "method.request.header.Authorization": true
-                    },
-                    "requestModels": {
-                        "application/json": "Empty"
-                    },
-                    "responses": {
-                        "200": {
-                            "statusCode": "200",
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
                             "responseParameters": {
-                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'",
-                                "method.response.header.Access-Control-Allow-Methods": "'*'",
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
                                 "method.response.header.Access-Control-Allow-Origin": "'*'"
-                            },
-                            "responseTemplates": {
-                                "application/json": {
-                                    "payload": "$input.params()",
-                                    "path": "$input.params().path",
-                                    "query": "$input.params().querystring",
-                                    "header": "$input.params().header",
-                                    "Authorization": "$input.params(\"Authorization\")"
-                                }
                             },
                             "responseModels": {
                                 "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
                             }
                         }
+                    }
+                },
+                "operationId": "MySampleAPI-Hello-World",
+                "x-lambda": {
+                    "handler": "./hello/world",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World"
+                },
+                "x-apigateway": {
+                    "type": "AWS",
+                    "httpMethod": "POST",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"payload\" : $input.json(\"$\"),\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"query\": {\n        #foreach($param in $input.params().querystring.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().querystring.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"params\": {\n        #foreach($param in $input.params().path.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n        #end\n    }\n}\n"
                     },
-                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-GET/invocations"
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World/invocations",
+                    "cacheNamespace": "98zjff"
                 }
             },
-            "x-amazon-apigateway-resource": {
-                "id": "aag0pn"
+            "x-apigateway": {
+                "id": "98zjff"
             }
         },
-        "/": {
-            "x-amazon-apigateway-resource": {
-                "id": "jjmbnrgo7i"
+        "/hello/there": {
+            "options": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "x-apigateway": {
+                    "type": "MOCK",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"statusCode\": 200\n}"
+                    },
+                    "cacheNamespace": "r1kluq"
+                }
+            },
+            "patch": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "operationId": "MySampleAPI-Hello-There",
+                "x-lambda": {
+                    "handler": "./hello/there",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There"
+                },
+                "x-apigateway": {
+                    "type": "AWS",
+                    "httpMethod": "POST",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"payload\" : $input.json(\"$\"),\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"query\": {\n        #foreach($param in $input.params().querystring.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().querystring.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"params\": {\n        #foreach($param in $input.params().path.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n        #end\n    }\n}\n"
+                    },
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There/invocations",
+                    "cacheNamespace": "r1kluq"
+                }
+            },
+            "delete": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "operationId": "MySampleAPI-Hello-There",
+                "x-lambda": {
+                    "handler": "./hello/there",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There"
+                },
+                "x-apigateway": {
+                    "type": "AWS",
+                    "httpMethod": "POST",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"payload\" : $input.json(\"$\"),\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"query\": {\n        #foreach($param in $input.params().querystring.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().querystring.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"params\": {\n        #foreach($param in $input.params().path.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n        #end\n    }\n}\n"
+                    },
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-There/invocations",
+                    "cacheNamespace": "r1kluq"
+                }
+            },
+            "x-apigateway": {
+                "id": "r1kluq"
+            }
+        },
+        "/hello/world": {
+            "options": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "x-apigateway": {
+                    "type": "MOCK",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"statusCode\": 200\n}"
+                    },
+                    "cacheNamespace": "an1lv2"
+                }
+            },
+            "post": {
+                "responses": {
+                    "200": {
+                        "x-apigateway": {
+                            "responseParameters": {
+                                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization'",
+                                "method.response.header.Access-Control-Allow-Methods": "'POST,GET,OPTIONS,PUT,PATCH,DELETE'",
+                                "method.response.header.Access-Control-Allow-Origin": "'*'"
+                            },
+                            "responseModels": {
+                                "application/json": "Empty"
+                            },
+                            "responseTemplates": {
+                                "application/json": ""
+                            }
+                        }
+                    }
+                },
+                "operationId": "MySampleAPI-Hello-World",
+                "x-lambda": {
+                    "handler": "./hello/world",
+                    "memorySize": "128",
+                    "role": "arn:aws:iam::347191724861:role/Lambda",
+                    "timeout": "60",
+                    "runtime": "nodejs",
+                    "arn": "arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World"
+                },
+                "x-apigateway": {
+                    "type": "AWS",
+                    "httpMethod": "POST",
+                    "authorizationType": "NONE",
+                    "apiKeyRequired": false,
+                    "requestModels": {},
+                    "requestParameters": {},
+                    "requestTemplates": {
+                        "application/json": "{\n    \"payload\" : $input.json(\"$\"),\n    \"headers\": {\n        #foreach($param in $input.params().header.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().header.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"query\": {\n        #foreach($param in $input.params().querystring.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().querystring.get($param))\" #if($foreach.hasNext),#end\n        #end\n    },\n    \"params\": {\n        #foreach($param in $input.params().path.keySet())\n            \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n        #end\n    }\n}\n"
+                    },
+                    "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:347191724861:function:MySampleAPI-Hello-World/invocations",
+                    "cacheNamespace": "an1lv2"
+                }
+            },
+            "x-apigateway": {
+                "id": "an1lv2"
             }
         }
     },
-    "x-amazon-apigateway-restapi": {
-        "id": "ngv8h2emp2"
+    "x-apigateway": {
+        "id": "sx69vzjypc"
     }
 }

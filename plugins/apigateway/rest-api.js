@@ -1,97 +1,107 @@
-var merge = require('deepmerge'),
+var nestedSet = require('../../utils/nested-set'),
     async = require('async');
 
+function isDeployed(restapi) {
+    return restapi['x-apigateway'] && restapi['x-apigateway'].id;
+}
+
 module.exports = {
-    deployRestAPI: function deployRestAPI(args, options, done) {
-        var _ = this;
+    deployRestAPI: function deployRestAPI(restapi, done) {
+        var _ = this,
+            funcs = [];
 
-        if (!options.stage) {
-            return _.APIDeploy.logger.error('Please specify a stage with the --stage flag.');
+        if (isDeployed(restapi)) {
+            funcs.push(function getRestAPI(next) {
+                _.getRestAPI(restapi, function gotRestAPI(err, restapi) {
+                    next(err, restapi);
+                });
+            });
+        } else {
+            funcs.push(function deployRestAPI(next) {
+                _.createRestAPI(restapi, function deployedRestAPI(err, data) {
+                    next(err, restapi);
+                });
+            });
         }
 
-        _.APIDeploy.findMethods(args);
+        funcs.push(function findRestAPIResources(next) {
+            _.findRestAPIResources(restapi, function appliedGatewayIds(err, data) {
+                next(err, restapi);
+            });
+        });
 
-        if (!_.APIDeploy.methods.length) {
-            return _.APIDeploy.logger.error('Methods not found `' + _.APIDeploy.methods.join('`, `') + '`');
-        }
-
-        async.series([
-            function createOrUpdateRestAPI(next) {
-                var exists = _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'];
-
-                if (exists && exists.id) {
-                    _.updateRestAPI(next);
-                } else {
-                    _.createRestAPI(next);
-                }
-            },
-            function deployRestAPIResources(next) {
-                _.APIDeploy.findMethods(args);
-                _.deployRestAPIResources(next);
-            },
-            function deployRestAPIMethods(next) {
-                _.deployRestAPIMethods(next);
-            },
-            function deployRestAPIIntegrations(next) {
-                _.deployRestAPIIntegrations(next);
-            },
-            function createRestAPIDeployment(next) {
-                _.createRestAPIDeployment(options, next);
-            },
-            function saveSwagger(next) {
-                _.APIDeploy.saveSwagger(next);
-            }
-        ], done);
+        async.series(funcs, function(err, data) {
+            done(null, data);
+        });
     },
 
-    createRestAPI: function createRestAPI(done) {
+    getRestAPI: function getRestAPI(restapi, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Creating RestAPI');
+        _.AWSRequest({
+            path: '/restapis/' + restapi['x-apigateway'].id,
+            method: 'GET'
+        }, function(err, restAPI) {
+            if (err) {
+                _.APIDeploy.logger.warn(err);
+                _.APIDeploy.logger.warn('Attempting to create Rest API...');
+
+                delete restapi['x-apigateway'].id;
+
+                return _.createRestAPI(restapi, function deployRestAPI(err, restapi) {
+                    if (err) return done(err);
+                    done(null, restapi);
+                });
+            }
+
+            done(null, restapi);
+        });
+    },
+
+    createRestAPI: function createRestAPI(restapi, done) {
+        var _ = this;
+
+        _.APIDeploy.logger.log('Creating Rest API...');
 
         _.AWSRequest({
             path: '/restapis',
             method: 'POST',
             body: {
-                name: _.APIDeploy.sdk.name
+                name: _.sdk.name
             }
         }, function(err, restAPI) {
-            if (err) return _.APIDeploy.logger.error(err);
+            if (err) return done(err);
 
-            _.APIDeploy.swagger.data['x-amazon-apigateway-restapi'] = {
-                id: restAPI.id
-            };
+            nestedSet(restapi, 'x-apigateway.id', restAPI.id);
 
-            _.APIDeploy.logger.log('Finding root route for RestAPI');
+            _.APIDeploy.logger.succeed('Created Rest API.');
 
-            _.AWSRequest({
-                path: '/restapis/' + restAPI.id + '/resources',
-                method: 'GET'
-            }, function(err, resources) {
-                if (err) return _.APIDeploy.logger.error(err);
-
-                _.APIDeploy.swagger.data.paths = merge(_.APIDeploy.swagger.data.paths, {
-                    '/': {
-                        'x-amazon-apigateway-resource': {
-                            id: resources._embedded.item.id
-                        }
-                    }
-                });
-
-                _.APIDeploy.logger.log('Root route found for RestAPI');
-                _.APIDeploy.logger.log('RestAPI created');
-
-                done();
-            });
+            done(null, restapi);
         });
     },
 
-    updateRestAPI: function updateRestAPI(done) {
+    findRestAPIResources: function findRestAPIResources(restapi, done) {
         var _ = this;
 
-        _.APIDeploy.logger.log('Updating RestAPI');
-        _.APIDeploy.logger.log('Updated RestAPI');
+        _.APIDeploy.logger.log('Finding Rest API Resources...');
 
-        done();
-    }
+        _.AWSRequest({
+            path: '/restapis/' + restapi['x-apigateway'].id + '/resources?limit=500&embed=1',
+            method: 'GET'
+        }, function(err, restAPI) {
+            var resources = restAPI._embedded.item || [],
+                resource;
+
+            if (!(resources instanceof Array)) {
+                resources = [resources];
+            }
+
+            for (var i = 0; i < resources.length; i++) {
+                resource = resources[i];
+                nestedSet(restapi, 'paths.' + resource.path + '.x-apigateway.id', resource.id);
+            }
+
+            done(null, restapi);
+        });
+    },
 };
