@@ -4,7 +4,7 @@ var async = require('async'),
 function isDeployed(method, status) {
     var responses = method.oldData &&
         method.oldData._embedded &&
-        method.oldData._embedded['method:responses'];
+        method.oldData._embedded['integration:responses'];
 
     if (!responses) return false;
     if (!(responses instanceof Array)) responses = [responses];
@@ -49,12 +49,13 @@ module.exports = {
 
         funcs.push(function updateIntegrationResponse(next) {
             var patchOperations = findPatchOperations(
-                    exists,
                     method.responses[status]['x-apigateway'],
+                    exists,
                     [],
                     [
                         'responseParameters^=integration.response',
-                        'responseModels'
+                        'responseTemplates',
+                        'selectionPattern'
                     ]
                 );
 
@@ -88,7 +89,7 @@ module.exports = {
                 '/integration/responses/' + status,
             method: 'PUT',
             body: {
-                selectionPattern: ''
+                selectionPattern: null
             }
         }, function(err, methodResponses) {
             if (err) {
@@ -112,7 +113,7 @@ module.exports = {
             path: '/restapis/' + method.restapi['x-apigateway'].id +
                 '/resources/' + method.resource['x-apigateway'].id +
                 '/methods/' + method.method.toUpperCase() +
-                '/integration',
+                '/integration/responses/' + status,
             method: 'PATCH',
             body: {
                 patchOperations: patchOperations

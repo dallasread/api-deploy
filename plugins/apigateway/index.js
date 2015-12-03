@@ -16,7 +16,10 @@ var apigateway = module.exports = Plugin.create({
                 authorizationType: 'NONE',
                 apiKeyRequired: false,
                 requestModels: {},
-                requestParameters: {}
+                requestParameters: {},
+                requestTemplates: {
+                    'application/json': fs.readFileSync(__dirname + '/templates/request.json', { encoding: 'utf8' }),
+                }
             }
         }
     },
@@ -52,6 +55,12 @@ var apigateway = module.exports = Plugin.create({
             _.aws.region = AWS.config.region;
         }
 
+        _.defineProperties({
+            writable: true
+        }, {
+            AWSLambda: new AWS.Lambda()
+        });
+
         return _;
     },
 
@@ -84,7 +93,6 @@ var apigateway = module.exports = Plugin.create({
 
     afterSwagger: function afterSwagger(swaggerData) {
         var swaggerDataPaths = swaggerData.paths,
-            responseTemplate = fs.readFileSync(__dirname + '/templates/response.json', { encoding: 'utf8' }),
             key, method;
 
         for (key in swaggerDataPaths) {
@@ -99,7 +107,7 @@ var apigateway = module.exports = Plugin.create({
                                         'application/json': 'Empty'
                                     },
                                     responseTemplates: {
-                                        'application/json': responseTemplate
+                                        'application/json': ''
                                     }
                                 }
                             }
@@ -120,4 +128,5 @@ apigateway.defineProperties(require('./method-request'));
 apigateway.defineProperties(require('./method-response'));
 apigateway.defineProperties(require('./integration-request'));
 apigateway.defineProperties(require('./integration-response'));
+apigateway.defineProperties(require('./lambda-permission'));
 apigateway.defineProperties(require('./aws-request'));

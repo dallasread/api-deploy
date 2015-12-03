@@ -178,6 +178,10 @@ module.exports = {
 
             function deployIntegrationResponses(next) {
                 _.deployIntegrationResponses(method, next);
+            },
+
+            function deployIntegrationResponses(next) {
+                _.deployLambdaPermission(method, next);
             }
         ], function(err) {
             _.APIDeploy.logger.succeed('Deployed Method Details:', method.pathInfo);

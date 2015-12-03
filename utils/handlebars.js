@@ -19,7 +19,7 @@ handlebars.registerHelper('type-boolean', function(a) {
 });
 
 handlebars.registerHelper('type-object', function(a) {
-    return JSON.stringify(a || {});
+    return new handlebars.SafeString(JSON.stringify(a || {}));
 });
 
 handlebars.registerHelper('ensure-exists', function(namespace, a) {

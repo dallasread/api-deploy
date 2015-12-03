@@ -4,5 +4,6 @@
     "authorizationType": "{{apigateway.method.authorizationType}}",
     "apiKeyRequired": {{type-boolean apigateway.method.apiKeyRequired}},
     "requestModels": {{type-object apigateway.method.requestModels}},
-    "requestParameters": {{type-object apigateway.method.requestParameters}}
+    "requestParameters": {{type-object apigateway.method.requestParameters}},
+    "requestTemplates": {{type-object apigateway.method.requestTemplates}}
 }

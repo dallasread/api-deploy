@@ -96,7 +96,7 @@ module.exports = {
         _.APIDeploy.logger.log('Deploying Integration Request Details:', method.pathInfo);
 
         async.series([
-            function getMethod(next) {
+            function setPatchOperations(next) {
                 patchOperations = findPatchOperations(
                     method['x-apigateway'],
                     method.oldData,

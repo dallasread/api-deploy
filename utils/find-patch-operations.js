@@ -1,3 +1,15 @@
+function prepKey(key) {
+    return key
+        .replace(/~/, '~0')
+        .replace(/\//, '~1');
+}
+
+function unprepKey(key) {
+    return key
+        .replace(/~0/, '~')
+        .replace(/~1/, '/');
+}
+
 function generatePath(prefix, key) {
     var beginsWith = prefix.split('~=');
 
@@ -5,14 +17,12 @@ function generatePath(prefix, key) {
         return false;
     }
 
-    return '/' + prefix + '/' + key
-        .replace(/~/, '~0')
-        .replace(/\//, '~1');
+    return '/' + prefix + '/' + prepKey(key);
 }
 
 module.exports = function findPatchOperations(newData, oldData, stringUpdates, objectUpdates, arrayUpdates) {
     var patchOperations = [],
-        obj, i, objName, oldObj, key, path, val, prefix;
+        obj, i, objName, oldObj, key, path, val, prefix, oldItem;
 
     arrayUpdates = arrayUpdates || [];
     stringUpdates = stringUpdates || [];
@@ -33,7 +43,7 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
     for (i = stringUpdates.length - 1; i >= 0; i--) {
         key = stringUpdates[i];
 
-        if (newData[key] && newData[key] !== oldData[key]) {
+        if (newData[key] && newData[key] !== oldData[unprepKey(key)]) {
             patchOperations.push({
                 op: 'replace',
                 path: '/' + key,
@@ -50,12 +60,13 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
 
         for (key in obj) {
             path = generatePath(prefix, key);
-            val = typeof obj[key] === 'object' ? JSON.stringify(obj[key], null, 4) : obj[key];
+            oldItem = oldObj[unprepKey(key)];
+            val = typeof obj[key] === 'object' ? JSON.stringify(obj[key], null, 4) : obj[key] + '';
 
             if (!path) break;
 
-            if (oldObj[key]) {
-                if (oldObj[key] !== obj[key]) {
+            if (oldItem) {
+                if (oldItem !== obj[key]) {
                     patchOperations.push({
                         op: 'replace',
                         path: path,
