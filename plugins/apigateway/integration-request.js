@@ -1,19 +1,7 @@
 var nestedSet = require('../../utils/nested-set.js'),
     findPatchOperations = require('../../utils/find-patch-operations.js'),
+    anyDifferent = require('../../utils/any-different.js'),
     async = require('async');
-
-function anyDifferent(newData, oldData, attrs) {
-    newData = newData || {};
-    oldData = oldData || {};
-
-    for (var i = attrs.length - 1; i >= 0; i--) {
-        if (newData[attrs[i]] !== oldData[attrs[i]]) {
-            return true;
-        }
-    }
-
-    return false;
-}
 
 module.exports = {
     deployIntegrationRequest: function deployIntegrationRequest(method, done) {
@@ -144,6 +132,8 @@ module.exports = {
     updateIntegrationRequest: function updateIntegrationRequest(method, patchOperations, done) {
         var _ = this;
 
+        if (!patchOperations.length) return done();
+
         _.APIDeploy.logger.log('Updating Integration Request:', method.pathInfo);
 
         _.AWSRequest({
@@ -165,16 +155,5 @@ module.exports = {
 
             done(null, method);
         });
-    },
-
-    deployIntegrationResponse: function deployIntegrationResponse(method, done) {
-        var _ = this;
-
-        _.APIDeploy.logger.log('Deploying Integration Response:', method.pathInfo);
-        _.APIDeploy.logger.succeed('Deployed Integration Response:', method.pathInfo);
-
-        // do stuff
-
-        done(null, method);
-    },
+    }
 };

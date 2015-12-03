@@ -134,6 +134,8 @@ module.exports = {
     updateMethod: function updateMethod(method, patchOperations, done) {
         var _ = this;
 
+        if (!patchOperations.length) return done();
+
         _.APIDeploy.logger.log('Updating Method:', method.pathInfo);
 
         _.AWSRequest({
@@ -170,12 +172,12 @@ module.exports = {
                 _.deployIntegrationRequest(method, next);
             },
 
-            function deployIntegrationResponse(next) {
-                _.deployIntegrationResponse(method, next);
+            function deployMethodResponses(next) {
+                _.deployMethodResponses(method, next);
             },
 
-            function deployMethodResponse(next) {
-                _.deployMethodResponse(method, next);
+            function deployIntegrationResponses(next) {
+                _.deployIntegrationResponses(method, next);
             }
         ], function(err) {
             _.APIDeploy.logger.succeed('Deployed Method Details:', method.pathInfo);

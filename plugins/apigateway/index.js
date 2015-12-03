@@ -1,5 +1,6 @@
 var Plugin = require('../../lib/plugin'),
     AWS = require('aws-sdk'),
+    merge = require('../../utils/merge.js'),
     fs = require('fs');
 
 var apigateway = module.exports = Plugin.create({
@@ -56,6 +57,7 @@ var apigateway = module.exports = Plugin.create({
 
     beforeSwagger: function beforeSwagger(resourceNames) {
         var _ = this,
+            swaggerDataPaths = _.APIDeploy.swagger.data.paths,
             i;
 
         if (!_.apigateway.cors) return;
@@ -72,11 +74,35 @@ var apigateway = module.exports = Plugin.create({
         delete corsObj.httpMethod;
 
         for (i = 0; i < resourceNames.length; i++) {
-            _.APIDeploy.swagger.data.paths[resourceNames[i]] = {
+            swaggerDataPaths[resourceNames[i]] = {
                 options: {
                     'x-apigateway': corsObj
                 }
             };
+        }
+    },
+
+    afterSwagger: function afterSwagger(swaggerData) {
+        var swaggerDataPaths = swaggerData.paths,
+            key, method;
+
+        for (key in swaggerDataPaths) {
+            for (method in swaggerDataPaths[key]) {
+                if (method.slice(0, 2) !== 'x-') {
+                    swaggerDataPaths[key][method] = merge({
+                        responses: {
+                            200: {
+                                'x-apigateway': {
+                                    responseParameters: {},
+                                    responseModels: {
+                                        'application/json': 'Empty'
+                                    }
+                                }
+                            }
+                        }
+                    }, swaggerDataPaths[key][method]);
+                }
+            }
         }
     },
 });
@@ -86,6 +112,8 @@ apigateway.defineProperties(require('./rest-api'));
 apigateway.defineProperties(require('./deployment'));
 apigateway.defineProperties(require('./resource'));
 apigateway.defineProperties(require('./method'));
-apigateway.defineProperties(require('./method-details'));
-apigateway.defineProperties(require('./integration-details'));
+apigateway.defineProperties(require('./method-request'));
+apigateway.defineProperties(require('./method-response'));
+apigateway.defineProperties(require('./integration-request'));
+apigateway.defineProperties(require('./integration-response'));
 apigateway.defineProperties(require('./aws-request'));

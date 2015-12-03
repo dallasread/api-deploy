@@ -27,7 +27,7 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
     for (i = stringUpdates.length - 1; i >= 0; i--) {
         key = stringUpdates[i];
 
-        if (newData[key]) {
+        if (newData[key] && newData[key] !== oldData[key]) {
             patchOperations.push({
                 op: 'replace',
                 path: '/' + key,
@@ -46,11 +46,13 @@ module.exports = function findPatchOperations(newData, oldData, stringUpdates, o
             val = typeof obj[key] === 'object' ? JSON.stringify(obj[key], null, 4) : obj[key];
 
             if (oldObj[key]) {
-                patchOperations.push({
-                    op: 'replace',
-                    path: path,
-                    value: val
-                });
+                if (oldObj[key] !== obj[key]) {
+                    patchOperations.push({
+                        op: 'replace',
+                        path: path,
+                        value: val
+                    });
+                }
             } else {
                 patchOperations.push({
                     op: 'add',
