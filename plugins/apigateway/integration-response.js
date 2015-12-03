@@ -20,29 +20,12 @@ function isDeployed(method, status) {
 
 module.exports = {
     deployIntegrationResponses: function deployIntegrationResponses(method, done) {
-        var _ = this,
-            patchOperations = [];
+        var _ = this;
 
         _.APIDeploy.logger.log('Deploying Integration Responses:', method.pathInfo);
 
         async.forEachOfSeries(method.responses, function deployEachIntegrationResponse(response, status, next) {
-            var exists = isDeployed(method, status);
-
-            if (exists) {
-                patchOperations = findPatchOperations(
-                    exists,
-                    response['x-apigateway'],
-                    [],
-                    [
-                        'responseParameters^=integration.response',
-                        'responseModels'
-                    ]
-                );
-
-                _.updateIntegrationResponse(method, status, patchOperations, next);
-            } else {
-                _.createIntegrationResponse(method, status, next);
-            }
+            _.deployIntegrationResponse(method, status, next);
         }, function(err, data) {
             _.APIDeploy.logger.succeed('Deployed Integration Responses:', method.pathInfo);
 
@@ -50,29 +33,68 @@ module.exports = {
         });
     },
 
-    createIntegrationResponse: function createIntegrationResponse(method, status, done) {
+    deployIntegrationResponse: function deployIntegrationResponse(method, status, done) {
         var _ = this,
-            response = method.responses[status]['x-apigateway'],
-            body;
+            funcs = [];
 
-        _.APIDeploy.logger.log('Creating Integration Response:', method.pathInfo + ' (' + status + ')');
+        _.APIDeploy.logger.succeed('Deploying Integration Response:', method.pathInfo, '(' + status + ')');
 
-        if (response.selectionPattern) body.selectionPattern = response.selectionPattern;
-        if (response.responseParameters) body.responseParameters = response.responseParameters;
-        if (response.responseTemplates) body.responseTemplates = response.responseTemplates;
+        var exists = isDeployed(method, status);
+
+        if (!exists) {
+            funcs.push(function createIntegrationResponse(next) {
+                _.createIntegrationResponse(method, status, next);
+            });
+        }
+
+        funcs.push(function updateIntegrationResponse(next) {
+            var patchOperations = findPatchOperations(
+                    exists,
+                    method.responses[status]['x-apigateway'],
+                    [],
+                    [
+                        'responseParameters^=integration.response',
+                        'responseModels'
+                    ]
+                );
+
+            if (patchOperations.length) {
+                _.updateIntegrationResponse(method, status, patchOperations, next);
+            } else {
+                next();
+            }
+        });
+
+        async.series(funcs, function(err, data) {
+            if (err) {
+                _.APIDeploy.logger.warn(err);
+            } else {
+                _.APIDeploy.logger.succeed('Deployed Integration Response:', method.pathInfo, '(' + status + ')');
+            }
+
+            done(null, method);
+        });
+    },
+
+    createIntegrationResponse: function createIntegrationResponse(method, status, done) {
+        var _ = this;
+
+        _.APIDeploy.logger.log('Creating Integration Response:', method.pathInfo, '(' + status + ')');
 
         _.AWSRequest({
             path: '/restapis/' + method.restapi['x-apigateway'].id +
                 '/resources/' + method.resource['x-apigateway'].id +
                 '/methods/' + method.method.toUpperCase() +
-                '/integration',
+                '/integration/responses/' + status,
             method: 'PUT',
-            body: body
+            body: {
+                selectionPattern: ''
+            }
         }, function(err, methodResponses) {
             if (err) {
                 _.APIDeploy.logger.warn(err);
             } else {
-                _.APIDeploy.logger.succeed('Created Integration Response:', method.pathInfo + ' (' + status + ')');
+                _.APIDeploy.logger.succeed('Created Integration Response:', method.pathInfo, '(' + status + ')');
             }
 
             done(null, methodResponses);
@@ -84,7 +106,7 @@ module.exports = {
 
         if (!patchOperations.length) return done();
 
-        _.APIDeploy.logger.log('Updating Integration Response:', method.pathInfo + ' (' + status + ')');
+        _.APIDeploy.logger.log('Updating Integration Response:', method.pathInfo, '(' + status + ')');
 
         _.AWSRequest({
             path: '/restapis/' + method.restapi['x-apigateway'].id +
@@ -99,7 +121,7 @@ module.exports = {
             if (err) {
                 _.APIDeploy.logger.warn(err);
             } else {
-                _.APIDeploy.logger.succeed('Updated Integration Response:', method.pathInfo + ' (' + status + ')');
+                _.APIDeploy.logger.succeed('Updated Integration Response:', method.pathInfo, '(' + status + ')');
             }
 
             done(null, methodResponses);

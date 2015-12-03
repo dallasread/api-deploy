@@ -66,9 +66,9 @@ var apigateway = module.exports = Plugin.create({
 
         corsObj.type = 'MOCK';
         corsObj.requestTemplates = {
-            'application/json': {
+            'application/json': JSON.stringify({
                 statusCode: 200
-            }
+            }, null, 4)
         };
 
         delete corsObj.httpMethod;
