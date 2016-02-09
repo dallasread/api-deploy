@@ -1,3 +1,12 @@
+try {
+    require.resolve('request');
+} catch(e) {
+    console.error('Unmet dependencies, please run:', 'npm install request');
+    process.exit(e.code);
+}
+
+var request = require('request');
+
 var API_FILL_REGEX = /[{]([^}]*)[}]/g;
 
 function API_FILL_URL(url, data) {
@@ -26,20 +35,13 @@ API.{{dotterize operationId 1}} = function (data, done) {
         console.warn('No callback supplied.');
     }
 
-    $.ajax({
+    request({
         method: '{{upcase method}}',
         url: API_FILL_URL('{{../sdk.url}}{{path}}', data),
-        data: '{{upcase method}}' === 'GET' ? undefined : data.payload,
-        dataType: 'json',
-        jsonp: false,
-        headers: data.headers,
-        success: function complete(response) {
-            typeof done === 'function' && done(null, response);
-        },
-        error: function error(response) {
-            typeof done === 'function' && done(response, null);
-        }
-    });
+        body: '{{upcase method}}' === 'GET' ? undefined : data.payload,
+        json: true,
+        headers: data.headers
+    }, typeof done === 'function' && done);
 };
 {{/if}}
 {{/each}}
