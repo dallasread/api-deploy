@@ -1,0 +1,47 @@
+var AWS = window.AWS,
+    API;
+
+API = {
+    debug: false,
+
+    init: function init(lambda) {
+        this.lambda = lambda || new AWS.Lambda();
+    },
+
+    invoke: function invoke(func, payload, done) {
+        this.lambda.invoke({
+            FunctionName: func,
+            Payload: JSON.stringify(payload)
+        }, function(err, data) {
+            var payload;
+
+            if (API.debug) console.log(func, err, data);
+
+            if (err) return done(err);
+
+            try {
+                payload = JSON.parse(data.Payload);
+            } catch (e) {}
+
+            if ('errorMessage' in payload) return done(payload.errorMessage);
+
+            done(null, payload);
+        });
+    }
+};
+
+{{#each methods}}
+{{#if operationId}}
+{{{ensure-exists 'API' operationId}}}
+API.{{dotterize operationId 1}} = function (data, done) {
+{{#if x-lambda.arn}}
+    this.invoke('{{x-lambda.arn}}', data, done);
+{{else}}
+    this.debug && console.warn('Lambda not deployed:', '{{operationId}}');
+{{/if}}
+};
+{{/if}}
+{{/each}}
+
+if (window) window.{{sdk.name}} = API;
+module.exports = API;
