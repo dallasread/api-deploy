@@ -46,18 +46,12 @@ server.connection({
         path: '{{path}}',
         handler: function (request, reply) {
             var context = {
-                    done: function(err, data) {
-                        if (err) {
-                            return reply(null, { error: err });
-                        }
-
-                        return reply(null, data);
-                    },
+                    done: reply,
                     succeed: function(data) {
                         return reply(null, data);
                     },
                     fail: function(err) {
-                        return reply(null, { error: err });
+                        return reply(err);
                     }
                 },
                 request = {

@@ -143,6 +143,8 @@ module.exports = {
 
             zipArchive.pipe(zip);
 
+            zipArchive.append(fs.readFileSync(jsPath), { name: 'index.js' });
+
             zipArchive.bulk([
                 {
                     src: modules.map(function(d) {
@@ -173,8 +175,6 @@ module.exports = {
                     });
                 }
             });
-
-            zipArchive.append(fs.readFileSync(jsPath), { name: 'index.js' });
 
             zipArchive.finalize(function(err, bytes) {
                 if (err) throw err;
