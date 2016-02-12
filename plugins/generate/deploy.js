@@ -1,13 +1,11 @@
 var fs = require('fs'),
-    Path = require('path'),
     async = require('async'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
     uglify = require('gulp-uglify'),
+    zip = require('gulp-vinyl-zip'),
     pluralize = require('pluralize'),
-    gulp = require('gulp'),
-    rename = require('gulp-rename'),
     gulpUtil = require('gulp-util'),
     Finder = require('../../utils/finder'),
     nestedSet = require('../../utils/nested-set.js');
@@ -98,25 +96,11 @@ module.exports = {
     },
 
     deployLambda: function deployLambda(method, done) {
-        var _ = this,
-            globalModules = _.lambda.node_modules,
-            modules = method['x-lambda'].node_modules || [];
-
-        if (globalModules && globalModules.length) {
-            for (var i = globalModules.length - 1; i >= 0; i--) {
-                if (modules.indexOf(globalModules[i]) === -1) {
-                    modules.push(globalModules[i]);
-                }
-            }
-        }
+        var _ = this;
 
         _.APIDeploy.logger.log('Compiling Lambda:', method.pathInfo);
 
-        var tmpPath = './tmp/' + method.operationId,
-            zipPath = tmpPath + '.zip',
-            jsPath = tmpPath + '.js',
-            jsBaseDir = Path.basename(jsPath),
-            jsFileName = Path.dirname(jsPath);
+        var zipPath = './tmp/' + method.operationId + '.zip';
 
         browserify({
             standalone: 'handler',
@@ -132,53 +116,26 @@ module.exports = {
         .bundle()
         .pipe(source(method['x-lambda'].handler))
         .pipe(buffer())
-        .pipe(uglify(_.uglify || {}).on('error', gulpUtil.log))
-        .pipe(rename(jsBaseDir))
-        .pipe(gulp.dest(jsFileName))
+        .pipe(uglify(_.uglify).on('error', gulpUtil.log))
+        .pipe(zip.dest(zipPath))
         .on('end', function zipComplete() {
-            var fs = require('fs'),
-                archiver = require('archiver'),
-                zip = fs.createWriteStream(zipPath),
-                zipArchive = archiver('zip');
+            var zip = fs.readFileSync(zipPath);
 
-            zipArchive.pipe(zip);
+            method.setHidden('deployed', false);
 
-            zipArchive.append(fs.readFileSync(jsPath), { name: 'index.js' });
+            // fs.unlinkSync(zipPath);
 
-            zipArchive.bulk([
-                {
-                    src: modules.map(function(d) {
-                        return d + '/**/*';
-                    }),
-                    dest: 'node_modules/',
-                    cwd: './node_modules',
-                    expand: true
-                }
-            ]);
-
-            zip.on('close', function() {
-                zip = fs.readFileSync(zipPath);
-
-                method.setHidden('deployed', false);
-
-                // fs.unlinkSync(zipPath);
-
-                if (isDeployed(method)) {
-                    _.updateLambda(method, zip, function(err, data) {
-                        if (err) _.APIDeploy.logger.warn(err);
-                        done(null, data);
-                    });
-                } else {
-                    _.createLambda(method, zip, function(err, data) {
-                        if (err) _.APIDeploy.logger.warn(err);
-                        done(null, data);
-                    });
-                }
-            });
-
-            zipArchive.finalize(function(err, bytes) {
-                if (err) throw err;
-            });
+            if (isDeployed(method)) {
+                _.updateLambda(method, zip, function(err, data) {
+                    if (err) _.APIDeploy.logger.warn(err);
+                    done(null, data);
+                });
+            } else {
+                _.createLambda(method, zip, function(err, data) {
+                    if (err) _.APIDeploy.logger.warn(err);
+                    done(null, data);
+                });
+            }
         });
     },
 
@@ -189,7 +146,7 @@ module.exports = {
             options = {
                 FunctionName:   method.operationId,
                 Description:    lambda.description,
-                Handler:        'index.handler',
+                Handler:        lambdaPath(lambda.handler),
                 MemorySize:     lambda.memorySize || defaultLambda.memorySize,
                 Role:           lambda.role       || defaultLambda.role,
                 Timeout:        lambda.timeout    || defaultLambda.timeout,
@@ -246,7 +203,7 @@ module.exports = {
                 var options = {
                     FunctionName:   lambda.arn,
                     Description:    lambda.description,
-                    Handler:        'index.handler',
+                    Handler:        lambdaPath(lambda.handler),
                     MemorySize:     lambda.memorySize || defaultLambda.memorySize,
                     Role:           lambda.role       || defaultLambda.role,
                     Timeout:        lambda.timeout    || defaultLambda.timeout

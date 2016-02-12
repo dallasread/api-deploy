@@ -46,25 +46,22 @@ server.connection({
         path: '{{path}}',
         handler: function (request, reply) {
             var context = {
-                    done: function(err, data) {
-                        if (err) data = { error: err.message };
-                        reply(null, data);
-                    },
+                    done: reply,
                     succeed: function(data) {
-                        reply(null, data);
+                        return reply(null, data);
                     },
                     fail: function(err) {
-                        reply(null, { error: err.message });
+                        return reply(err);
                     }
                 },
-                event = {
+                request = {
                     headers: request.headers,
                     payload: request.payload,
                     params: request.params,
                     query: request.query
                 };
 
-            endpoint.handler(event, context);
+            endpoint.handler(request, context);
         }
     });
 }());
