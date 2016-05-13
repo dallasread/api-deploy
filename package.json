@@ -1,6 +1,6 @@
 {
   "name": "api-deploy",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "API Deploy publishes your Amazon Lambda functions and exports a JS SDK to use on the Web. Your SDK and Lambdas are both built based on the `config.json` that you supply.",
   "main": "./index.js",
   "bin": {
@@ -27,7 +27,7 @@
   "dependencies": {
     "archiver": "^0.20.0",
     "async": "^1.4.2",
-    "aws-sdk": "^2.2.26",
+    "aws-sdk": "^2.3.11",
     "aws4": "^1.1.0",
     "browserify": "^11.2.0",
     "deepmerge": "^0.2.10",

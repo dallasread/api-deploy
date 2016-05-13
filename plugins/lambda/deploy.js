@@ -249,7 +249,8 @@ module.exports = {
                     Handler:        'index.handler',
                     MemorySize:     lambda.memorySize || defaultLambda.memorySize,
                     Role:           lambda.role       || defaultLambda.role,
-                    Timeout:        lambda.timeout    || defaultLambda.timeout
+                    Timeout:        lambda.timeout    || defaultLambda.timeout,
+                    Runtime:        lambda.runtime    || defaultLambda.runtime
                 };
 
                 _.AWSLambda.updateFunctionConfiguration(options, function(err, data) {
