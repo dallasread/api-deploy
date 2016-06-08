@@ -33,7 +33,7 @@ module.exports = {
 
                 setTimeout(function() {
                     done(null, body);
-                }, 100);
+                }, 1000);
             });
         });
 

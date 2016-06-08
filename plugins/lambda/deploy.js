@@ -239,7 +239,7 @@ module.exports = {
                         _.APIDeploy.logger.log('Updated Lambda Code:', method.pathInfo);
                     }
 
-                    next(err, data);
+                    setTimeout(next(err, data), 1000);
                 });
             },
             function updateConfig(next) {
