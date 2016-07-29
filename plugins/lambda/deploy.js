@@ -10,7 +10,8 @@ var fs = require('fs'),
     rename = require('gulp-rename'),
     gulpUtil = require('gulp-util'),
     Finder = require('../../utils/finder'),
-    nestedSet = require('../../utils/nested-set.js');
+    nestedSet = require('../../utils/nested-set.js')
+    stringify = require('stringify');
 
 function lambdaPath(path) {
     return path
@@ -127,6 +128,9 @@ module.exports = {
             commondir: false,
             detectGlobals: false,
             igv: '__filename,__dirname'
+        })
+        .transform(stringify, {
+            appliesTo: { includeExtensions: ['.txt', '.html', '.hbs', '.bars'] }
         })
         .exclude('aws-sdk')
         .bundle()
