@@ -10,7 +10,7 @@ var fs = require('fs'),
     rename = require('gulp-rename'),
     gulpUtil = require('gulp-util'),
     Finder = require('../../utils/finder'),
-    nestedSet = require('../../utils/nested-set.js')
+    nestedSet = require('../../utils/nested-set.js'),
     stringify = require('stringify');
 
 function lambdaPath(path) {
@@ -121,7 +121,6 @@ module.exports = {
 
         browserify({
             standalone: 'handler',
-            entries: [method['x-lambda'].handler],
             bare: true,
             browserField: false,
             builtins: false,
@@ -130,8 +129,9 @@ module.exports = {
             igv: '__filename,__dirname'
         })
         .transform(stringify, {
-            appliesTo: { includeExtensions: ['.txt', '.html', '.hbs', '.bars'] }
+          appliesTo: { includeExtensions: ['.txt', '.html', '.bars', '.hbs'] }
         })
+        .add(method['x-lambda'].handler)
         .exclude('aws-sdk')
         .bundle()
         .pipe(source(method['x-lambda'].handler))

@@ -46,6 +46,7 @@ server.connection({
         path: '{{path}}',
         handler: function (request, reply) {
             var context = {
+                    getRemainingTimeInMillis: function() { return 100000000; },
                     done: reply,
                     succeed: function(data) {
                         return reply(null, data);
