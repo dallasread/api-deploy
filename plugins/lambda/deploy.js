@@ -4,7 +4,7 @@ var fs = require('fs'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
-    uglify = require('gulp-uglify'),
+    uglify = require('gulp-uglify-es').default,
     pluralize = require('pluralize'),
     gulp = require('gulp'),
     rename = require('gulp-rename'),
@@ -230,22 +230,6 @@ module.exports = {
         _.APIDeploy.logger.log('Updating Lambda:', method.pathInfo);
 
         async.series([
-            function updateCode(next) {
-                var options = {
-                    FunctionName: lambda.arn,
-                    ZipFile: zip
-                };
-
-                _.AWSLambda.updateFunctionCode(options, function(err, data) {
-                    if (err) {
-                        err.hint = 'Delete the ARN in the config file for `' + method.operationId + '` and re-deploy.';
-                    } else {
-                        _.APIDeploy.logger.log('Updated Lambda Code:', method.pathInfo);
-                    }
-
-                    setTimeout(next(err, data), 1000);
-                });
-            },
             function updateConfig(next) {
                 var options = {
                     FunctionName:   lambda.arn,
@@ -263,6 +247,24 @@ module.exports = {
                     }
 
                     next(err, data);
+                });
+            },
+            function updateCode(next) {
+                var options = {
+                    FunctionName: lambda.arn,
+                    ZipFile: zip
+                };
+
+                _.AWSLambda.updateFunctionCode(options, function(err, data) {
+                    if (err) {
+                        err.hint = 'Delete the ARN in the config file for `' + method.operationId + '` and re-deploy.';
+                    } else {
+                        _.APIDeploy.logger.log('Updated Lambda Code:', method.pathInfo);
+                    }
+
+                    setTimeout(function() {
+                        next(err, data)
+                    }, 1000);
                 });
             }
         ], function (err, results) {

@@ -3,7 +3,7 @@ var fs = require('fs'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
-    uglify = require('gulp-uglify'),
+    uglify = require('gulp-uglify-es').default,
     zip = require('gulp-vinyl-zip'),
     pluralize = require('pluralize'),
     gulpUtil = require('gulp-util'),
@@ -183,6 +183,25 @@ module.exports = {
         _.APIDeploy.logger.log('Updating Lambda:', method.pathInfo);
 
         async.series([
+            function updateConfig(next) {
+                var options = {
+                    FunctionName:   lambda.arn,
+                    Description:    lambda.description,
+                    Handler:        lambdaPath(lambda.handler),
+                    MemorySize:     lambda.memorySize || defaultLambda.memorySize,
+                    Role:           lambda.role       || defaultLambda.role,
+                    Timeout:        lambda.timeout    || defaultLambda.timeout,
+                    Runtime:        lambda.runtime    || defaultLambda.runtime
+                };
+
+                _.AWSLambda.updateFunctionConfiguration(options, function(err, data) {
+                    if (!err) {
+                        _.APIDeploy.logger.log('Updated Lambda Config:', method.pathInfo);
+                    }
+
+                    next(err, data);
+                });
+            },
             function updateCode(next) {
                 var options = {
                     FunctionName: lambda.arn,
@@ -194,24 +213,6 @@ module.exports = {
                         err.hint = 'Delete the ARN in the config file for `' + method.operationId + '` and re-deploy.';
                     } else {
                         _.APIDeploy.logger.log('Updated Lambda Code:', method.pathInfo);
-                    }
-
-                    next(err, data);
-                });
-            },
-            function updateConfig(next) {
-                var options = {
-                    FunctionName:   lambda.arn,
-                    Description:    lambda.description,
-                    Handler:        lambdaPath(lambda.handler),
-                    MemorySize:     lambda.memorySize || defaultLambda.memorySize,
-                    Role:           lambda.role       || defaultLambda.role,
-                    Timeout:        lambda.timeout    || defaultLambda.timeout
-                };
-
-                _.AWSLambda.updateFunctionConfiguration(options, function(err, data) {
-                    if (!err) {
-                        _.APIDeploy.logger.log('Updated Lambda Config:', method.pathInfo);
                     }
 
                     next(err, data);

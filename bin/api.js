@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var deployer = require(require('path').resolve('./deployfile.js')),
+var path = require('path'),
+    deployer = require(path.resolve('./deployfile.js')),
     argv = process.argv.slice(4),
     pluginName = process.argv[3],
     action = process.argv[2],

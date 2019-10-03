@@ -84,3 +84,7 @@ MyAPI.accountsCreate({
 
 # TODO
 - Undeploy Resources
+
+# Changelog
+- 0.3.14
+  - Update to uglify with es6 support

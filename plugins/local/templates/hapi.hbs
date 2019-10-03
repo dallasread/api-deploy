@@ -39,6 +39,10 @@ server.connection({
 {{#each methods}}
 {{#if x-lambda.handler}}
 (function () {
+    if ('{{method}}'.toLowerCase() === 'head') {
+        return;
+    }
+
     var endpoint = require('{{x-lambda.handler}}');
 
     server.route({
@@ -62,7 +66,9 @@ server.connection({
                     query: request.query
                 };
 
-            endpoint.handler(request, context);
+            setTimeout(function() {
+                endpoint.handler(request, context);
+            }, 500);
         }
     });
 }());
